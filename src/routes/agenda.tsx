@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Field, NativeSelect } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { uid, validarCita, type EstadoCita } from "@/lib/clinic";
 
 export const Route = createFileRoute("/agenda")({
@@ -19,6 +20,7 @@ const estadoCls: Record<EstadoCita, string> = { Programada: "bg-secondary text-s
 
 function Agenda() {
   const s = useStore();
+  const auth = useAuth();
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ mascotaId: "", vetId: s.vets[0]?.id ?? "", hora: "10:00", duracion: 30, motivo: "" });
@@ -40,7 +42,7 @@ function Agenda() {
           <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} className="w-40" />
           <Button variant="outline" size="icon" onClick={() => mover(1)} aria-label="Día siguiente"><ChevronRight /></Button>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button><Plus /> Nueva cita</Button></DialogTrigger>
+            <Button onClick={() => auth.requireAuth("create_cita", () => setOpen(true))}><Plus /> Nueva cita</Button>
             <DialogContent><DialogHeader><DialogTitle>Agendar cita · {fecha}</DialogTitle></DialogHeader>
               <div className="grid gap-3">
                 <Field label="Mascota"><NativeSelect value={f.mascotaId} onChange={(e) => setF({ ...f, mascotaId: e.target.value })}><option value="">Seleccionar…</option>{s.mascotas.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}</NativeSelect></Field>

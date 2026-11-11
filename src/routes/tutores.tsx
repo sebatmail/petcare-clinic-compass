@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Field } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { uid, validarRut } from "@/lib/clinic";
 
 export const Route = createFileRoute("/tutores")({
@@ -34,6 +35,7 @@ const PRESET_TUTOR_AVATARS = [
 
 function Tutores() {
   const s = useStore();
+  const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [f, setF] = useState({ nombre: "", rut: "", email: "", telefono: "", direccion: "", foto: "" });
@@ -95,7 +97,7 @@ function Tutores() {
     <>
       <PageHeader title="Tutores" subtitle="Responsables y dueños de cada paciente" action={
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus /> Nuevo tutor</Button></DialogTrigger>
+          <Button onClick={() => auth.requireAuth("create_tutor", () => setOpen(true))}><Plus /> Nuevo tutor</Button>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Registrar nuevo tutor</DialogTitle></DialogHeader>
             <div className="grid gap-3 pt-2">
@@ -184,7 +186,13 @@ function Tutores() {
               <div className="flex items-end justify-between">
                 {t.foto ? <img src={t.foto} alt={t.nombre} className="size-20 rounded-2xl border-4 border-card object-cover" loading="lazy" />
                   : <div className="grid size-20 place-items-center rounded-2xl border-4 border-card bg-secondary text-2xl font-bold text-primary">{t.nombre.charAt(0)}</div>}
-                <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => { if (pets.length) { toast.error("Tiene mascotas asociadas"); return; } s.set("tutores", s.tutores.filter((x) => x.id !== t.id)); }}><Trash2 /></Button>
+                <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => {
+                  auth.requireAuth("delete_tutor", () => {
+                    if (pets.length) { toast.error("Tiene mascotas asociadas"); return; }
+                    s.set("tutores", s.tutores.filter((x) => x.id !== t.id));
+                    toast.success(`Tutor "${t.nombre}" eliminado`);
+                  });
+                }}><Trash2 /></Button>
               </div>
               <div><h3 className="text-xl font-semibold">{t.nombre}</h3><p className="text-sm text-muted-foreground">RUT {t.rut}</p></div>
               <div className="space-y-1 text-sm text-muted-foreground">

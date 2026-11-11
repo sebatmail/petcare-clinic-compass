@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Field, NativeSelect } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { uid, type Species } from "@/lib/clinic";
 
 export const Route = createFileRoute("/mascotas")({
@@ -35,6 +36,7 @@ const PRESET_PET_PHOTOS = [
 
 function Mascotas() {
   const s = useStore();
+  const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ tutorId: "", nombre: "", especie: "Perro", raza: "", nacimiento: "", peso: "", foto: "" });
   const [vac, setVac] = useState<{ id: string; nombre: string; proxima: string } | null>(null);
@@ -100,7 +102,7 @@ function Mascotas() {
     <>
       <PageHeader title="Mascotas" subtitle="Pacientes registrados con ficha clínica biométrica" action={
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus /> Nueva mascota</Button></DialogTrigger>
+          <Button onClick={() => auth.requireAuth("create_pet", () => setOpen(true))}><Plus /> Nueva mascota</Button>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Registrar nueva mascota</DialogTitle></DialogHeader>
             <div className="grid gap-3 pt-2">
               <Field label="Tutor Responsable">
@@ -211,13 +213,15 @@ function Mascotas() {
                     className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     title="Eliminar mascota"
                     onClick={() => {
-                      const citas = s.citas.filter((c) => c.mascotaId === m.id);
-                      if (citas.length > 0) {
-                        toast.error(`No se puede eliminar: tiene ${citas.length} citas registradas`);
-                        return;
-                      }
-                      s.set("mascotas", s.mascotas.filter((x) => x.id !== m.id));
-                      toast.success(`Mascota "${m.nombre}" eliminada`);
+                      auth.requireAuth("delete_pet", () => {
+                        const citas = s.citas.filter((c) => c.mascotaId === m.id);
+                        if (citas.length > 0) {
+                          toast.error(`No se puede eliminar: tiene ${citas.length} citas registradas`);
+                          return;
+                        }
+                        s.set("mascotas", s.mascotas.filter((x) => x.id !== m.id));
+                        toast.success(`Mascota "${m.nombre}" eliminada`);
+                      });
                     }}
                   >
                     <Trash2 className="size-3.5" />
@@ -227,7 +231,7 @@ function Mascotas() {
               <p className="text-sm text-muted-foreground">{m.raza} · {edad(m.nacimiento)} · {m.peso} kg</p>
               <p className="text-sm">Tutor: {s.tutores.find((t) => t.id === m.tutorId)?.nombre}</p>
               <div className="space-y-1 pt-1">{m.vacunas.map((v, i) => <p key={i} className="flex items-center gap-2 text-xs text-muted-foreground"><Syringe className="size-3 text-primary" />{v.nombre} · próx. {v.proxima}</p>)}</div>
-              <Button variant="outline" size="sm" className="w-full" onClick={() => setVac({ id: m.id, nombre: "", proxima: "" })}><Syringe /> Registrar vacuna</Button>
+              <Button variant="outline" size="sm" className="w-full" onClick={() => auth.requireAuth("create_ficha", () => setVac({ id: m.id, nombre: "", proxima: "" }))}><Syringe /> Registrar vacuna</Button>
             </CardContent>
           </Card>
         ))}

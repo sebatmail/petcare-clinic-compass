@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PageHeader, Field } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { clp } from "@/lib/clinic";
 import { payTransbank, payMercadoPago, payPayPal, payCrypto } from "@/lib/payments.functions";
 
@@ -98,6 +99,7 @@ function ProviderIcon({ prov, size = "md" }: { prov: string; size?: "sm" | "md" 
 
 function Pagos() {
   const s = useStore();
+  const auth = useAuth();
   const search = Route.useSearch();
   const navigate = useNavigate();
   const [prov, setProv] = useState<(typeof PROVS)[number]["id"]>("tbk");
@@ -267,7 +269,7 @@ function Pagos() {
               </p>
             </div>
 
-            <Button className="w-full h-11 text-sm font-semibold shadow-md" onClick={pagar} disabled={loading}>
+            <Button className="w-full h-11 text-sm font-semibold shadow-md cursor-pointer" onClick={() => auth.requireAuth("process_pago", pagar)} disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="size-4 animate-spin mr-2" /> Conectando con pasarela...

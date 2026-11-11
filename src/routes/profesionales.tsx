@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Field } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { uid } from "@/lib/clinic";
 
 export const Route = createFileRoute("/profesionales")({
@@ -42,6 +43,7 @@ const schema = z.object({
 
 function Profesionales() {
   const s = useStore();
+  const auth = useAuth();
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({
     nombre: "",
@@ -117,11 +119,9 @@ function Profesionales() {
         subtitle="Configura la disponibilidad horaria y profesionales para la prevención de solapamientos"
         action={
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus /> Nuevo Profesional
-              </Button>
-            </DialogTrigger>
+            <Button onClick={() => auth.requireAuth("create_vet", () => setOpen(true))}>
+              <Plus /> Nuevo Profesional
+            </Button>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Registrar Médico Veterinario</DialogTitle>
@@ -266,7 +266,7 @@ function Profesionales() {
                     size="icon"
                     className="size-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     title="Eliminar profesional"
-                    onClick={() => deleteVet(v.id, v.nombre)}
+                    onClick={() => auth.requireAuth("delete_vet", () => deleteVet(v.id, v.nombre))}
                   >
                     <Trash2 className="size-4" />
                   </Button>

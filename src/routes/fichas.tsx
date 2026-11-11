@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Field, NativeSelect } from "@/components/page";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { uid } from "@/lib/clinic";
 
 export const Route = createFileRoute("/fichas")({
@@ -24,6 +25,7 @@ const schema = z.object({
 
 function Fichas() {
   const s = useStore();
+  const auth = useAuth();
   const [sel, setSel] = useState(s.mascotas[0]?.id ?? "");
   const [open, setOpen] = useState(false);
   const vacio = { mascotaId: sel, vetId: s.vets[0]?.id ?? "", diagnostico: "", tratamiento: "", receta: "", examenes: "", proximoControl: "" };
@@ -40,7 +42,7 @@ function Fichas() {
     <>
       <PageHeader title="Fichas médicas" subtitle="Historial clínico completo por paciente" action={
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) setF({ ...vacio, mascotaId: sel }); }}>
-          <DialogTrigger asChild><Button><Plus /> Nueva atención</Button></DialogTrigger>
+          <Button onClick={() => auth.requireAuth("create_ficha", () => setOpen(true))}><Plus /> Nueva atención</Button>
           <DialogContent className="max-w-lg"><DialogHeader><DialogTitle>Registrar atención</DialogTitle></DialogHeader>
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-3">
