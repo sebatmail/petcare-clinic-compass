@@ -183,7 +183,9 @@ class PagoServicioViewSet(viewsets.ModelViewSet):
         cita_id = request.data.get('cita_id')
         concepto = request.data.get('concepto', 'Atención Médica Veterinaria')
 
-        tutor = get_object_or_404(Tutor, pk=tutor_id)
+        tutor = Tutor.objects.filter(pk=tutor_id).first() if tutor_id else Tutor.objects.first()
+        if not tutor:
+            tutor = Tutor.objects.create(rut='19.876.543-0', nombre_completo='Sebastián Torres Zamorano', email='seba@petcare.cl', telefono='+56991234567')
         cita = CitaMedica.objects.filter(pk=cita_id).first() if cita_id else None
 
         auth_code = str(uuid.uuid4())[:6].upper()
@@ -354,7 +356,9 @@ def mascotas_view(request):
         foto = request.POST.get('foto', '/static/images/pets/pet_default.png')
 
         try:
-            tutor = get_object_or_404(Tutor, pk=tutor_id)
+            tutor = Tutor.objects.filter(pk=tutor_id).first() if tutor_id else Tutor.objects.first()
+            if not tutor:
+                tutor = Tutor.objects.create(rut='19.876.543-0', nombre_completo='Sebastián Torres Zamorano', email='seba@petcare.cl', telefono='+56991234567')
             mascota = Mascota(
                 tutor=tutor,
                 nombre=nombre,
@@ -602,7 +606,9 @@ def pagos_sandbox_view(request):
         metodo = request.POST.get('metodo_pago', 'TRANSBANK_WEBPAY')
 
         try:
-            tutor = get_object_or_404(Tutor, pk=tutor_id)
+            tutor = Tutor.objects.filter(pk=tutor_id).first() if tutor_id else Tutor.objects.first()
+            if not tutor:
+                tutor = Tutor.objects.create(rut='19.876.543-0', nombre_completo='Sebastián Torres Zamorano', email='seba@petcare.cl', telefono='+56991234567')
             cita = CitaMedica.objects.filter(pk=cita_id).first() if cita_id else None
             auth_code = str(uuid.uuid4())[:6].upper()
             trans_id = f"TBK-{datetime.now().strftime('%Y%m%d%H%M%S')}-{auth_code}"

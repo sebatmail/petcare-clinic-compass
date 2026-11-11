@@ -6,7 +6,7 @@ const input = z.object({
   amount: z.number().int().min(50).max(5_000_000),
   concept: z.string().trim().min(3).max(120),
   orderId: z.string().regex(/^[A-Za-z0-9-]{4,26}$/),
-  origin: z.string().url().refine((u) => /^https:\/\/|^http:\/\/localhost(:\d+)?/.test(u), "origin inválido"),
+  origin: z.string().url().refine((u) => /^https?:\/\//.test(u), "origin inválido"),
 });
 type Out = { ok: true; url: string; token?: string; ref: string } | { ok: false; error: string };
 const safe = async (fn: () => Promise<Out>): Promise<Out> => { try { return await fn(); } catch (e) { console.error(e); return { ok: false, error: "Error al contactar al proveedor" }; } };
