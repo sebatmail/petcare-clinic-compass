@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Clinic business rules (appointment overlap, reminders, RUT) live as pure functions in `src/lib/clinic.ts` with tests in `src/test/clinic.test.ts`; UI must call them rather than re-implement.
+- Payment gateways run only in server functions (`src/lib/payments.functions.ts`) against sandbox endpoints; credentials come from env secrets, never the browser. Transbank commit happens in the server return route.
+- App data is client-side (localStorage store in `src/lib/store.tsx`) until a backend is added.

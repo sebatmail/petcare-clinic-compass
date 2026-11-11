@@ -10,33 +10,142 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgendaRouteImport } from './routes/agenda'
+import { Route as FichasRouteImport } from './routes/fichas'
+import { Route as MascotasRouteImport } from './routes/mascotas'
+import { Route as PagosRouteImport } from './routes/pagos'
+import { Route as ProfesionalesRouteImport } from './routes/profesionales'
+import { Route as RecordatoriosRouteImport } from './routes/recordatorios'
+import { Route as TutoresRouteImport } from './routes/tutores'
+import { Route as ApiPublicTransbankReturnRouteImport } from './routes/api/public/transbank/return'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FichasRoute = FichasRouteImport.update({
+  id: '/fichas',
+  path: '/fichas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MascotasRoute = MascotasRouteImport.update({
+  id: '/mascotas',
+  path: '/mascotas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagosRoute = PagosRouteImport.update({
+  id: '/pagos',
+  path: '/pagos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfesionalesRoute = ProfesionalesRouteImport.update({
+  id: '/profesionales',
+  path: '/profesionales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordatoriosRoute = RecordatoriosRouteImport.update({
+  id: '/recordatorios',
+  path: '/recordatorios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutoresRoute = TutoresRouteImport.update({
+  id: '/tutores',
+  path: '/tutores',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicTransbankReturnRoute =
+  ApiPublicTransbankReturnRouteImport.update({
+    id: '/api/public/transbank/return',
+    path: '/api/public/transbank/return',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/fichas': typeof FichasRoute
+  '/mascotas': typeof MascotasRoute
+  '/pagos': typeof PagosRoute
+  '/profesionales': typeof ProfesionalesRoute
+  '/recordatorios': typeof RecordatoriosRoute
+  '/tutores': typeof TutoresRoute
+  '/api/public/transbank/return': typeof ApiPublicTransbankReturnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/fichas': typeof FichasRoute
+  '/mascotas': typeof MascotasRoute
+  '/pagos': typeof PagosRoute
+  '/profesionales': typeof ProfesionalesRoute
+  '/recordatorios': typeof RecordatoriosRoute
+  '/tutores': typeof TutoresRoute
+  '/api/public/transbank/return': typeof ApiPublicTransbankReturnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/fichas': typeof FichasRoute
+  '/mascotas': typeof MascotasRoute
+  '/pagos': typeof PagosRoute
+  '/profesionales': typeof ProfesionalesRoute
+  '/recordatorios': typeof RecordatoriosRoute
+  '/tutores': typeof TutoresRoute
+  '/api/public/transbank/return': typeof ApiPublicTransbankReturnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/agenda'
+    | '/fichas'
+    | '/mascotas'
+    | '/pagos'
+    | '/profesionales'
+    | '/recordatorios'
+    | '/tutores'
+    | '/api/public/transbank/return'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/agenda'
+    | '/fichas'
+    | '/mascotas'
+    | '/pagos'
+    | '/profesionales'
+    | '/recordatorios'
+    | '/tutores'
+    | '/api/public/transbank/return'
+  id:
+    | '__root__'
+    | '/'
+    | '/agenda'
+    | '/fichas'
+    | '/mascotas'
+    | '/pagos'
+    | '/profesionales'
+    | '/recordatorios'
+    | '/tutores'
+    | '/api/public/transbank/return'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
+  FichasRoute: typeof FichasRoute
+  MascotasRoute: typeof MascotasRoute
+  PagosRoute: typeof PagosRoute
+  ProfesionalesRoute: typeof ProfesionalesRoute
+  RecordatoriosRoute: typeof RecordatoriosRoute
+  TutoresRoute: typeof TutoresRoute
+  ApiPublicTransbankReturnRoute: typeof ApiPublicTransbankReturnRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +157,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fichas': {
+      id: '/fichas'
+      path: '/fichas'
+      fullPath: '/fichas'
+      preLoaderRoute: typeof FichasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mascotas': {
+      id: '/mascotas'
+      path: '/mascotas'
+      fullPath: '/mascotas'
+      preLoaderRoute: typeof MascotasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagos': {
+      id: '/pagos'
+      path: '/pagos'
+      fullPath: '/pagos'
+      preLoaderRoute: typeof PagosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profesionales': {
+      id: '/profesionales'
+      path: '/profesionales'
+      fullPath: '/profesionales'
+      preLoaderRoute: typeof ProfesionalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recordatorios': {
+      id: '/recordatorios'
+      path: '/recordatorios'
+      fullPath: '/recordatorios'
+      preLoaderRoute: typeof RecordatoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutores': {
+      id: '/tutores'
+      path: '/tutores'
+      fullPath: '/tutores'
+      preLoaderRoute: typeof TutoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/transbank/return': {
+      id: '/api/public/transbank/return'
+      path: '/api/public/transbank/return'
+      fullPath: '/api/public/transbank/return'
+      preLoaderRoute: typeof ApiPublicTransbankReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
+  FichasRoute: FichasRoute,
+  MascotasRoute: MascotasRoute,
+  PagosRoute: PagosRoute,
+  ProfesionalesRoute: ProfesionalesRoute,
+  RecordatoriosRoute: RecordatoriosRoute,
+  TutoresRoute: TutoresRoute,
+  ApiPublicTransbankReturnRoute: ApiPublicTransbankReturnRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
