@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Plus, Syringe, Upload, Sparkles, X, Image as ImageIcon } from "lucide-react";
+import { Plus, Syringe, Upload, Sparkles, X, Image as ImageIcon, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,11 +197,33 @@ function Mascotas() {
         </Dialog>} />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {s.mascotas.map((m) => (
-          <Card key={m.id} className="shadow-card border-0 overflow-hidden">
+          <Card key={m.id} className="shadow-card border-0 overflow-hidden relative group">
             {m.foto ? <img src={m.foto} alt={m.nombre} className="aspect-square w-full object-cover" loading="lazy" width={816} height={816} />
               : <div className="grid aspect-square place-items-center bg-secondary text-6xl font-display text-primary">{m.nombre[0]}</div>}
             <CardContent className="space-y-2 p-4">
-              <div className="flex items-center justify-between"><h3 className="text-xl font-semibold">{m.nombre}</h3><Badge variant="secondary">{m.especie}</Badge></div>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold">{m.nombre}</h3>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="secondary">{m.especie}</Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    title="Eliminar mascota"
+                    onClick={() => {
+                      const citas = s.citas.filter((c) => c.mascotaId === m.id);
+                      if (citas.length > 0) {
+                        toast.error(`No se puede eliminar: tiene ${citas.length} citas registradas`);
+                        return;
+                      }
+                      s.set("mascotas", s.mascotas.filter((x) => x.id !== m.id));
+                      toast.success(`Mascota "${m.nombre}" eliminada`);
+                    }}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
               <p className="text-sm text-muted-foreground">{m.raza} · {edad(m.nacimiento)} · {m.peso} kg</p>
               <p className="text-sm">Tutor: {s.tutores.find((t) => t.id === m.tutorId)?.nombre}</p>
               <div className="space-y-1 pt-1">{m.vacunas.map((v, i) => <p key={i} className="flex items-center gap-2 text-xs text-muted-foreground"><Syringe className="size-3 text-primary" />{v.nombre} · próx. {v.proxima}</p>)}</div>
