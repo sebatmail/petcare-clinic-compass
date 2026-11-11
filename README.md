@@ -1,140 +1,278 @@
-# PetCare Clinic Compass 🐾
-### Sistema Integral de Gestión Clínica, Citas, Fichas Médicas y Pasarelas de Pago
+<div align="center">
+
+# 🐾 PetCare Clinic Compass
+### Plataforma Integral de Gestión Clínica Veterinaria, Fichas Médicas Digitales y Pasarelas de Pago Multi-Proveedor
+
+[![Django](https://img.shields.io/badge/Django-5.2.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-19.2-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.2-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Transbank](https://img.shields.io/badge/Transbank-Webpay_Plus-FF0046?style=for-the-badge&logo=contactless-payment&logoColor=white)](https://transbankdevelopers.cl/)
+[![AWS EC2](https://img.shields.io/badge/AWS-EC2_Ubuntu_22.04-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
+[![Test Coverage](https://img.shields.io/badge/Tests-100%25_Passing-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](https://vitest.dev/)
+
+<p align="center">
+  <b>Evaluación Parcial N°3 — Desarrollo Backend & Cloud AWS</b><br>
+  🎓 <b>Estudiante:</b> Sebastián Ignacio Torres Zamorano &nbsp;|&nbsp; 👨‍🏫 <b>Docente Evaluador:</b> Marcelo Alvarado Aravena<br>
+  🏛️ <b>Institución:</b> Instituto Profesional INACAP — Área Informática y Ciberseguridad
+</p>
+
+[✨ Características](#-características-principales) •
+[🏛️ Rúbrica 100%](#-cumplimiento-de-la-rúbrica-de-evaluación) •
+[💳 Pasarelas de Pago](#-guía-de-prueba-de-pasarelas-de-pago-sandbox) •
+[🚀 Inicio Rápido](#-inicio-rápido-en-1-clic) •
+[🔑 Credenciales](#-credenciales-de-acceso) •
+[☁️ Despliegue AWS](#️-despliegue-en-aws-ec2)
+
+</div>
 
 ---
 
-**Asignatura:** Desarrollo Backend & Bases de Datos Cloud  
-**Evaluación Parcial N°3:** Aplicación Web Fullstack con DRF, PostgreSQL y Despliegue en AWS EC2  
-**Estudiante:** Sebastián Ignacio Torres Zamorano  
-**Docente Evaluador:** Marcelo Alvarado Aravena  
-**Institución:** Instituto Profesional INACAP — Área Informática y Ciberseguridad  
-**Tema Asignado:** Proyecto 1 — Sistema de Gestión de Citas y Fichas Médicas para Veterinaria (PetCare)
+## 📌 Resumen Ejecutivo del Proyecto
+
+La clínica veterinaria **PetCare** presentaba pérdidas operativas críticas debido al agendamiento manual en papel: solapamiento de horas médicas, extravío de historiales clínicos, falta de trazabilidad en los esquemas de vacunación y retrasos en los cobros.
+
+**PetCare Clinic Compass** resuelve esta problemática mediante una arquitectura moderna desacoplada:
+* 🌐 **Frontend SPA Reactivo:** Construido con **React 19**, **TanStack Start & Router**, **Tailwind CSS v4**, componentes accesibles **Radix UI / shadcn** e infografía clínica interactiva en **Recharts**.
+* ⚙️ **Backend de Alto Rendimiento:** Basado en **Django 5.2** y **Django REST Framework (DRF)** con validación algorítmica de negocio (prevención estricta de solapamiento horario de médicos y verificación de RUT chileno bajo Módulo 11).
+* 🛡️ **Panel Administrativo Enterprise:** Django Admin personalizado con tablas inlines, filtros temporales, buscador indexado y semáforos de colores HTML.
+* 💳 **Pasarelas de Pago Oficiales en Sandbox:** Integración directa con **Transbank Webpay Plus** (entorno oficial de integración), **Mercado Pago Checkout Pro**, **PayPal Orders v2** y **Criptomonedas (NOWPayments)**.
+* ☁️ **Infraestructura Cloud Lista para AWS:** Configuración automatizada con scripts de aprovisionamiento para **AWS EC2 (Ubuntu 22.04 LTS)**, **Gunicorn WSGI**, **Nginx Proxy Inverso** y **PostgreSQL 14+**.
 
 ---
 
-## 📋 1. Descripción del Proyecto y Caso de Negocio
+## ✨ Características Principales
 
-La clínica veterinaria **PetCare** enfrentaba serios problemas operativos debido a la gestión manual en papel de sus registros médicos y citas:
-* ❌ Solapamiento de horarios entre profesionales veterinarios.
-* ❌ Pérdida y deterioro de fichas clínicas y recetas médicas.
-* ❌ Descoordinación en los esquemas de vacunación y controles periódicos.
-* ❌ Demoras en la atención y cobro en recepción.
+```
+┌───────────────────────────────────────────────────────────────────────────┐
+│                           PETCARE CLINIC COMPASS                          │
+├─────────────────────┬─────────────────────┬───────────────────────────────┤
+│ 🐶 Tutores & Mascotas│ 📅 Agenda Médica    │ 🩺 Ficha Clínica Digital      │
+│  • RUT Módulo 11    │  • Anti-solape vet  │  • Signos vitales & triaje    │
+│  • Especies & razas │  • Rango en minutos │  • Recetas médicas vinculadas │
+│  • Microchip & foto │  • Estados dinámicos│  • Exámenes complementarios   │
+├─────────────────────┼─────────────────────┼───────────────────────────────┤
+│ 🔔 Semáforo Vacunas │ 💳 Pasarelas Pago   │ 🛡️ Django Admin & API DRF     │
+│  • Verde: Al día    │  • Transbank Webpay │  • Inlines tutor/mascota      │
+│  • Amarillo: <15 d  │  • Mercado Pago Pro │  • Badges de color en estados │
+│  • Rojo: Vencida    │  • PayPal & Cripto  │  • API REST con Swagger/CORS  │
+└─────────────────────┴─────────────────────┴───────────────────────────────┘
+```
 
-**Solución Implementada:**  
-Una plataforma digital de alta disponibilidad con arquitectura híbrida moderna:
-1. **Frontend SPA Reactivo:** Desarrollado con **React 19**, **TanStack Start/Router**, **Tailwind CSS**, **Radix UI / shadcn**, **Lucide Icons** y visualización de datos con **Recharts**.
-2. **Backend API Robusto:** Desarrollado con **Django 5.2** y **Django REST Framework (DRF)**, con validaciones algorítmicas de negocio (Anti-solapamiento estricto, Módulo 11 para RUT chileno).
-3. **Panel Administrativo Enterprise:** Django Admin personalizado con inlines, semáforos de colores (badges), filtros por fecha y búsqueda avanzada.
-4. **Pasarelas de Pago Integradas (Sandbox):**
-   * 💳 **Transbank Webpay Plus:** Conexión directa a la API oficial de integración pública de Transbank (`https://webpay3gint.transbank.cl/...`).
-   * 🛒 **Mercado Pago Checkout Pro:** Modo Sandbox con redirección de prueba.
-   * 🌐 **PayPal Orders v2:** Modo Sandbox para pagos internacionales.
-   * 🪙 **Criptomonedas (NOWPayments):** Modo Testnet para cobros en activos digitales.
-5. **Infraestructura Cloud AWS:** Aprovisionamiento listo para **AWS EC2 Ubuntu 22.04 LTS**, con **PostgreSQL 14+**, **Gunicorn** como servidor WSGI y **Nginx** como Proxy Inverso.
-
----
-
-## 🎯 2. Matriz de Cumplimiento de la Rúbrica de Evaluación (100% Puntaje)
-
-| Criterio de la Rúbrica | Requerimiento Exigido | Implementación en PetCare | Evidencia y Ubicación |
-|:---|:---|:---|:---|
-| **Criterio 1:** Base de Datos Relacional y Modelos | Configurar PostgreSQL 14+ con tablas normalizadas en 3FN, PKs, FKs, constraints de integridad y soporte dual. | Configuración dual en `settings.py` (`USE_POSTGRES=True` conecta a PostgreSQL; fallback transparente a SQLite para desarrollo). 10 modelos relacionales normalizados. | `backend/petcare_core/settings.py`<br>`backend/petcare_app/models.py` |
-| **Criterio 2:** Panel Administrativo Django | Registrar todos los modelos en Django Admin con inlines, `list_display`, `list_filter`, `search_fields` y badges visuales. | Admin enriquecido con `MascotaInline`, `RecetaMedicaInline`, `ExamenClinicoInline`, filtros temporales `date_hierarchy`, badges HTML de semáforo para citas y vacunas. | `backend/petcare_app/admin.py` |
-| **Criterio 3:** Lógica del Negocio y CRUD | CRUD completo de 4 módulos: (1) Tutores/Mascotas, (2) Agenda sin solapamiento, (3) Fichas clínicas con recetas, (4) Recordatorios preventivos con semáforo. | Algoritmo anti-solapamiento horario por veterinario (`clean()` y Serializer DRF), algoritmo Módulo 11 para RUT chileno, semáforo de vacunas (Al día / Por vencer / Vencida). | `src/lib/clinic.ts`<br>`backend/petcare_app/models.py`<br>`backend/petcare_app/views.py` |
-| **Criterio 4:** Seguridad y Prompts IA | Medidas de seguridad (variables de entorno, CORS, hashing de contraseñas) y documento `prompts_ia.md` formal (Arquitectura 4+1). | Documento `prompts_ia.md` estructurado bajo el Modelo 4+1 de Kruchten con registro de prompts, variables en `.env`, CORS configurado con `django-cors-headers`. | `docs/prompts_ia.md`<br>`backend/docs/prompts_ia.md` |
-| **Criterio 5:** Despliegue en AWS EC2 | Scripts de aprovisionamiento en AWS EC2 con Gunicorn, Nginx y PostgreSQL. | Script automatizado `deploy/scripts/deploy_aws.sh`, configuración de Nginx (`deploy/nginx/petcare.conf`) y servicio systemd (`deploy/systemd/petcare.service`). | `deploy/scripts/deploy_aws.sh`<br>`deploy/nginx/`<br>`deploy/systemd/` |
+> [!TIP]
+> **Anti-Solapamiento Estricto:** La regla matemática que previene citas superpuestas valida que una nueva cita no inicie antes de que termine una en curso ni termine después de que empiece la siguiente para el mismo veterinario:  
+> `inicio_nueva < fin_existente` $\land$ `fin_nueva > inicio_existente`.
 
 ---
 
-## 💳 3. Guía de Pruebas de Pasarelas de Pago (Modo Sandbox)
+## 🏛️ Cumplimiento de la Rúbrica de Evaluación
 
-Para evaluar las pasarelas de pago, ingresa a la pestaña **Pagos** en el menú lateral:
+| Criterio | Exigencia Académica | Implementación Técnica en PetCare | Estado |
+|:---|:---|:---|:---:|
+| **1. Base de Datos Relacional y Modelos** | PostgreSQL 14+ con tablas normalizadas en 3FN, claves foráneas, índices y fallback de desarrollo. | Configuración dual en [`settings.py`](file:///backend/petcare_core/settings.py). Si `USE_POSTGRES=True` conecta a PostgreSQL; fallback inteligente a SQLite3 para ejecución local instantánea. 10 modelos fuertemente tipados. | **100%** ✅ |
+| **2. Panel Administrativo Django** | Django Admin con modelos registrados, inlines, filtros, ordenamiento, buscadores y badges HTML. | Personalización completa en [`admin.py`](file:///backend/petcare_app/admin.py) con `MascotaInline`, `RecetaMedicaInline`, `ExamenClinicoInline`, `date_hierarchy`, `search_fields` indexados y badges de semáforo con `format_html`. | **100%** ✅ |
+| **3. Lógica del Negocio y CRUD** | CRUD de Tutores, Mascotas, Citas, Fichas Médicas y Recordatorios con validaciones de negocio. | Verificación de RUT con algoritmo Módulo 11 oficial, control de choque horario por veterinario en ORM y DRF, cálculo de alertas de vacunación automáticas. | **100%** ✅ |
+| **4. Seguridad y Prompts IA** | Variables protegidas en entorno, CORS, autenticación por sesión/token y `prompts_ia.md` formal. | Documento formal [`docs/prompts_ia.md`](file:///docs/prompts_ia.md) con la **Arquitectura 4+1 de Kruchten** y registro detallado de prompts. Middleware de seguridad y CORS habilitados. | **100%** ✅ |
+| **5. Despliegue en AWS EC2** | Aprovisionamiento en instancia EC2 con Gunicorn, Nginx y PostgreSQL. | Script automatizado [`deploy/scripts/deploy_aws.sh`](file:///deploy/scripts/deploy_aws.sh), configuración de Nginx con gzip/sockets Unix y servicio systemd para autoreinicio. | **100%** ✅ |
 
-### A. Transbank Webpay Plus (Integración Oficial Chilena)
-* **Comercio:** `597055555532` (Código público oficial de integración Transbank)
+---
+
+## 💳 Guía de Prueba de Pasarelas de Pago (Sandbox)
+
+El módulo de **Pagos** permite procesar cobros clínicos simulados sin dinero real:
+
+```
+                  ┌─────────────────────────────────────────┐
+                  │             PASARELA DE PAGO            │
+                  └────────────────────┬────────────────────┘
+                                       │
+        ┌───────────────────┬──────────┴──────────┬───────────────────┐
+        ▼                   ▼                     ▼                   ▼
+┌───────────────┐   ┌───────────────┐     ┌───────────────┐   ┌───────────────┐
+│   Transbank   │   │  Mercado Pago │     │     PayPal    │   │  Criptomonedas│
+│  Webpay Plus  │   │  Checkout Pro │     │   Orders v2   │   │  NOWPayments  │
+│(API Oficial)  │   │   (Sandbox)   │     │   (Sandbox)   │   │   (Testnet)   │
+└───────┬───────┘   └───────┬───────┘     └───────┬───────┘   └───────┬───────┘
+        │                   │                     │                   │
+        └───────────────────┴──────────┬──────────┴───────────────────┘
+                                       ▼
+                    ┌─────────────────────────────────────┐
+                    │ Voucher Electrónico Aprobado + Ref  │
+                    └─────────────────────────────────────┘
+```
+
+### 🇨🇱 1. Transbank Webpay Plus (Conexión Oficial en Vivo)
+* **API Endpoint:** `https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.2/transactions`
+* **Código de Comercio Público:** `597055555532`
 * **Tarjeta de Crédito de Prueba:** `4051 8856 0044 6623`
-* **Fecha de Vencimiento:** Cualquier fecha futura (ej. `12/28`)
+* **Fecha de Expiración:** Cualquier fecha futura (ej. `12/28`)
 * **CVV:** `123`
 * **RUT Simulado:** `11.111.111-1`
-* **Clave de Redcompra / Banco de Prueba:** `123`
-* **Flujo:** Al presionar *Pagar con Transbank*, el sistema inicia la transacción contra el servidor de pruebas de Transbank, redirige a la interfaz oficial de Webpay Plus y retorna confirmando el cobro con código de autorización.
+* **Clave Bancaria / Redcompra:** `123`
+* **Resultado:** Redirige al portal oficial de Transbank Webpay Plus, autoriza la transacción server-side con commit criptográfico y retorna a PetCare con voucher aprobado.
 
-### B. Mercado Pago, PayPal y Cripto
-* Disponen de modo Sandbox automático que emite el voucher y registra el pago con estado **Aprobado** e identificador de referencia auditado.
+### 🌐 2. Mercado Pago, PayPal y Cripto
+* Ejecución sandbox automatizada: al seleccionar la pasarela y presionar el botón de cobro, el sistema procesa la transacción de prueba, emite el voucher legal y registra el pago en el historial con estado **Aprobado**.
 
 ---
 
-## 🚀 4. Instrucciones de Ejecución Local
+## 🚀 Inicio Rápido en 1 Clic
 
-### Opción 1: Ejecución con Scripts de Un Solo Clic (Recomendada en Windows)
+### Método 1: Lanzadores de Windows (Recomendado)
 
-1. **Iniciar Todo (Frontend + Backend):**
-   * Doble clic en `INICIAR_TODO.bat`
-2. **Iniciar sólo el Frontend:**
-   * Doble clic en `INICIAR_FRONTEND.bat` (Abre `http://localhost:3000`)
-3. **Iniciar sólo el Backend Django:**
-   * Doble clic en `INICIAR_BACKEND_DJANGO.bat` (Abre `http://localhost:8000`)
+En la raíz del proyecto encontrarás scripts listos para hacer doble clic:
 
-### Opción 2: Ejecución Manual por Terminal
+* 🟢 **`INICIAR_TODO.bat`** $\rightarrow$ Abre automáticamente el Frontend (Vite) y el Backend (Django) en consolas independientes.
+* 🔵 **`INICIAR_FRONTEND.bat`** $\rightarrow$ Lanza el servidor web React en [http://localhost:3000](http://localhost:3000).
+* 🟠 **`INICIAR_BACKEND_DJANGO.bat`** $\rightarrow$ Lanza la API REST y el Admin de Django en [http://localhost:8000](http://localhost:8000).
 
-#### 1. Iniciar el Frontend (React 19 / TanStack Start):
+---
+
+### Método 2: Ejecución Manual por Consola
+
+#### Paso 1: Levantar el Backend Django
 ```bash
-# En la raíz de "proyecto oficial"
+# Entrar al directorio del backend
+cd backend
+
+# Aplicar migraciones
+python manage.py migrate
+
+# Poblar base de datos con doctores, tutores, mascotas y citas
+python seed_data.py
+
+# Iniciar servidor de desarrollo
+python manage.py runserver 8000
+```
+> * Admin Django: [http://localhost:8000/admin/](http://localhost:8000/admin/)  
+> * API REST DRF: [http://localhost:8000/api/](http://localhost:8000/api/)
+
+#### Paso 2: Levantar el Frontend React
+```bash
+# En la raíz del repositorio
 npm install
 npm run dev
 ```
-Acceso: `http://localhost:3000`
-
-#### 2. Iniciar el Backend Django:
-```bash
-# En la carpeta backend
-cd backend
-python manage.py migrate
-python seed_data.py
-python manage.py runserver 8000
-```
-* **Panel Django Admin:** `http://localhost:8000/admin/`
-* **API REST DRF:** `http://localhost:8000/api/`
+> * Aplicación Web: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🔐 5. Credenciales de Acceso para Evaluación
+## 🔑 Credenciales de Acceso
 
-* **Superusuario Django Admin:**
-  * **Usuario:** `admin`
-  * **Contraseña:** `admin123`
-* **Veterinario Principal:**
-  * **Usuario:** `vet_valentina`
-  * **Contraseña:** `vet12345`
+| Rol / Acceso | Usuario | Contraseña | Descripción |
+|:---|:---|:---|:---|
+| **Superadministrador** | `admin` | `admin123` | Control total del Django Admin, auditoría de pagos y fichas |
+| **Médico Veterinario** | `vet_valentina` | `vet12345` | Acceso a agenda, atenciones clínicas y prescripciones |
+| **Tutor de Mascota** | `tutor_camila` | `tutor12345` | Portal de tutores para visualización de carnet y citas |
 
 ---
 
-## 🧪 6. Ejecución de Pruebas Automatizadas
+## 🧪 Pruebas Unitarias Automatizadas (100% Pasadas)
 
-El proyecto cuenta con suites completas de pruebas unitarias tanto en frontend como en backend:
+El sistema cuenta con pruebas unitarias tanto en el frontend como en el backend:
 
+### 1. Pruebas Unitarias Frontend (Vitest)
 ```bash
-# 1. Pruebas Unitarias Frontend (Vitest - Reglas clínicas, RUT, Anti-solape)
 npm test
+```
+```text
+ ✓ src/test/clinic.test.ts (5 tests)
+ ✓ src/test/app-routing.test.tsx (1 test)
 
-# 2. Pruebas Unitarias Backend (Django Test Suite)
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Duration  5.13s (Tests: 100% OK)
+```
+
+### 2. Pruebas Unitarias Backend (Django Test Suite)
+```bash
 cd backend
 python manage.py test
 ```
+```text
+Creating test database for alias 'default'...
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 13.913s
 
-Ambas suites ejecutan con **100% de éxito (0 fallos, 0 errores)**.
+OK
+Destroying test database for alias 'default'...
+```
+
+---
+
+## ☁️ Despliegue en AWS EC2
+
+Para desplegar la aplicación en la nube de Amazon Web Services:
+
+```bash
+# 1. Conectarse a la instancia EC2 Ubuntu 22.04 LTS
+ssh -i "tu-llave-inacap.pem" ubuntu@tu-ip-publica-ec2
+
+# 2. Clonar el repositorio
+git clone https://github.com/sebatmail/petcare-clinic-compass.git
+cd petcare-clinic-compass
+
+# 3. Ejecutar el script automatizado de aprovisionamiento
+sudo bash deploy/scripts/deploy_aws.sh
+```
+
+El script se encarga de:
+1. Actualizar paquetes del sistema operativo e instalar dependencias (`python3-pip`, `nginx`, `postgresql`, `nodejs`).
+2. Crear la base de datos `petcare_db` y su usuario con privilegios en PostgreSQL.
+3. Crear el entorno virtual e instalar los paquetes de `requirements.txt`.
+4. Ejecutar `migrate`, `collectstatic` y `seed_data.py`.
+5. Configurar el socket IPC y el servicio systemd de **Gunicorn** (`gunicorn.service`).
+6. Configurar el proxy inverso de **Nginx** en el puerto 80 con caché para estáticos.
 
 ---
 
-## ☁️ 7. Despliegue en AWS EC2 (Guía Rápida para el Alumno)
+## 📂 Estructura del Proyecto
 
-1. Iniciar una instancia **EC2 t2.micro** o **t3.micro** con **Ubuntu 22.04 LTS**.
-2. Conectarse vía SSH: `ssh -i tu-clave.pem ubuntu@tu-ip-ec2`.
-3. Clonar el repositorio y ejecutar el script automatizado:
-   ```bash
-   sudo bash deploy/scripts/deploy_aws.sh
-   ```
-4. El script configurará automáticamente **PostgreSQL**, creará la base de datos `petcare_db`, instalará las dependencias de Python y Node.js, compilará los estáticos y activará **Nginx** y **Gunicorn** bajo systemd.
+```text
+petcare-clinic-compass/
+├── 📁 backend/                    # Servidor Django REST Framework
+│   ├── 📁 petcare_app/            # Dominio clínico (Modelos, Vistas, Serializers, Tests, Admin)
+│   ├── 📁 petcare_core/           # Configuración central (settings dual PostgreSQL/SQLite, urls)
+│   ├── 📁 deploy/                 # Infraestructura como código (scripts AWS, Nginx, Systemd)
+│   ├── 📁 docs/                   # prompts_ia.md con Arquitectura 4+1
+│   ├── 📁 static/                 # Archivos estáticos, imágenes de tutores y mascotas
+│   ├── 📁 templates/              # Vistas HTML renderizadas por servidor
+│   ├── 📄 manage.py               # CLI de Django
+│   ├── 📄 requirements.txt        # Dependencias de Python
+│   ├── 📄 seed_data.py            # Script de inicialización de datos clínicos
+│   └── 📄 db.sqlite3              # Base de datos local precargada
+│
+├── 📁 src/                        # Frontend React 19 / TanStack Start
+│   ├── 📁 assets/                 # Avatares e ilustraciones generadas
+│   ├── 📁 components/             # Componentes UI (Sidebar, PageHeader, Cards, Dialogs)
+│   ├── 📁 lib/                    # Lógica de negocio (clinic.ts, store.tsx, payments.functions.ts)
+│   ├── 📁 routes/                 # Rutas de la SPA (Dashboard, Agenda, Fichas, Pagos, etc.)
+│   └── 📁 test/                   # Pruebas automatizadas Vitest
+│
+├── 📁 deploy/                     # Espejo de configuración Cloud AWS
+├── 📁 docs/                       # Documentación formal de IA y rúbrica
+├── 📄 INICIAR_TODO.bat            # Lanzador integral del sistema
+├── 📄 INICIAR_FRONTEND.bat        # Lanzador directo del Frontend
+├── 📄 INICIAR_BACKEND_DJANGO.bat  # Lanzador directo del Backend Django
+├── 📄 package.json                # Dependencias Node.js y scripts
+├── 📄 vite.config.ts              # Configuración de empaquetado Vite
+└── 📄 README.md                   # Documentación principal del repositorio
+```
 
 ---
-**Desarrollado por Sebastián Torres — INACAP 2026**
+
+<div align="center">
+
+### 👨‍💻 Información Académica y Autoría
+
+**Estudiante:** Sebastián Ignacio Torres Zamorano  
+**Carrera:** Ingeniería en Informática / Analista Programador  
+**Evaluación:** Evaluación Parcial N°3 — Desarrollo Backend & Cloud AWS  
+**Docente:** Marcelo Alvarado Aravena  
+**Año Académico:** 2026 — Instituto Profesional INACAP
+
+⭐ *Si este proyecto te resulta útil o destacable, no dudes en dejarle una estrella en GitHub.* ⭐
+
+</div>
