@@ -11,11 +11,17 @@ cd /d "%~dp0backend"
 
 where python >nul 2>&1
 if %errorlevel% equ 0 (
-    echo Iniciando Django Server con Python del sistema en http://localhost:8000 ...
+    echo Iniciando Django Server con python en http://localhost:8000 ...
     python manage.py runserver 8000
 ) else (
-    echo Usando Python WindowsApps...
-    "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\python3.13.exe" manage.py runserver 8000
+    where py >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo Iniciando Django Server con py launcher en http://localhost:8000 ...
+        py manage.py runserver 8000
+    ) else (
+        echo Usando Python WindowsApps...
+        "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\python3.13.exe" manage.py runserver 8000
+    )
 )
 
 pause
