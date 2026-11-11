@@ -31,12 +31,12 @@ function Mascotas() {
   const [vac, setVac] = useState<{ id: string; nombre: string; proxima: string } | null>(null);
   const save = () => {
     const r = schema.safeParse(f);
-    if (!r.success) return toast.error(r.error.issues[0].message);
+    if (!r.success) { toast.error(r.error.issues[0]?.message ?? "Datos inválidos"); return; }
     s.set("mascotas", [...s.mascotas, { id: uid(), ...r.data, especie: r.data.especie as Species, vacunas: [] }]);
     setOpen(false); toast.success("Mascota registrada");
   };
   const addVac = () => {
-    if (!vac || vac.nombre.trim().length < 2 || !vac.proxima) return toast.error("Completa vacuna y próxima fecha");
+    if (!vac || vac.nombre.trim().length < 2 || !vac.proxima) { toast.error("Completa vacuna y próxima fecha"); return; }
     s.set("mascotas", s.mascotas.map((m) => m.id === vac.id ? { ...m, vacunas: [...m.vacunas, { nombre: vac.nombre.trim(), fecha: new Date().toISOString().slice(0, 10), proxima: vac.proxima }] } : m));
     setVac(null); toast.success("Vacuna registrada");
   };

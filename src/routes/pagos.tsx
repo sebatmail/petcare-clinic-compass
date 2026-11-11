@@ -13,11 +13,11 @@ import { useStore } from "@/lib/store";
 import { clp } from "@/lib/clinic";
 import { payTransbank, payMercadoPago, payPayPal, payCrypto } from "@/lib/payments.functions";
 
-type Search = { status?: string; prov?: string; ref?: string; auth?: string };
+type Search = { status?: string | undefined; prov?: string | undefined; ref?: string | undefined; auth?: string | undefined };
 export const Route = createFileRoute("/pagos")({
   validateSearch: (s: Record<string, unknown>): Search => ({
-    status: typeof s.status === "string" ? s.status : undefined, prov: typeof s.prov === "string" ? s.prov : undefined,
-    ref: typeof s.ref === "string" ? s.ref : undefined, auth: typeof s.auth === "string" ? s.auth : undefined,
+    status: typeof s["status"] === "string" ? s["status"] : undefined, prov: typeof s["prov"] === "string" ? s["prov"] : undefined,
+    ref: typeof s["ref"] === "string" ? s["ref"] : undefined, auth: typeof s["auth"] === "string" ? s["auth"] : undefined,
   }),
   head: () => ({ meta: [{ title: "Pagos · PetCare" }, { name: "description", content: "Cobros con Transbank, Mercado Pago, PayPal y cripto en modo pruebas." }, { property: "og:title", content: "Pagos · PetCare" }, { property: "og:description", content: "Pasarelas de pago en modo pruebas." }] }),
   component: Pagos,
@@ -52,14 +52,14 @@ function Pagos() {
 
   const pagar = async () => {
     const monto = Math.round(Number(amount));
-    if (!Number.isFinite(monto) || monto < 50) return toast.error("Monto inválido (mínimo $50)");
-    if (concept.trim().length < 3) return toast.error("Concepto requerido");
+    if (!Number.isFinite(monto) || monto < 50) { toast.error("Monto inválido (mínimo $50)"); return; }
+    if (concept.trim().length < 3) { toast.error("Concepto requerido"); return; }
     const orderId = `PC-${Date.now().toString(36).toUpperCase()}`;
     setLoading(true);
     const r = await fns[prov]({ data: { amount: monto, concept: concept.trim(), orderId, origin: window.location.origin } }).catch(() => ({ ok: false as const, error: "Datos inválidos" }));
     setLoading(false);
-    if (!r.ok) return toast.error(r.error);
-    s.set("pagos", [{ id: orderId, fecha: new Date().toISOString().slice(0, 10), concepto: concept.trim(), monto, proveedor: NAMES[prov], estado: "Pendiente" }, ...s.pagos]);
+    if (!r.ok) { toast.error(r.error); return; }
+    s.set("pagos", [{ id: orderId, fecha: new Date().toISOString().slice(0, 10), concepto: concept.trim(), monto, proveedor: NAMES[prov] ?? prov, estado: "Pendiente" }, ...s.pagos]);
     if (prov === "tbk" && r.token) {
       const f = document.createElement("form"); f.method = "POST"; f.action = r.url;
       const i = document.createElement("input"); i.type = "hidden"; i.name = "token_ws"; i.value = r.token; f.appendChild(i);

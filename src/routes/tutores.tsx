@@ -31,8 +31,8 @@ function Tutores() {
   const [f, setF] = useState({ nombre: "", rut: "", email: "", telefono: "", direccion: "" });
   const save = () => {
     const r = schema.safeParse(f);
-    if (!r.success) return toast.error(r.error.issues[0].message);
-    if (s.tutores.some((t) => t.rut.replace(/\D/g, "") === r.data.rut.replace(/\D/g, ""))) return toast.error("Ya existe un tutor con ese RUT");
+    if (!r.success) { toast.error(r.error.issues[0]?.message ?? "Datos inválidos"); return; }
+    if (s.tutores.some((t) => t.rut.replace(/\D/g, "") === r.data.rut.replace(/\D/g, ""))) { toast.error("Ya existe un tutor con ese RUT"); return; }
     s.set("tutores", [...s.tutores, { id: uid(), ...r.data }]);
     setOpen(false); setF({ nombre: "", rut: "", email: "", telefono: "", direccion: "" }); toast.success("Tutor registrado");
   };
@@ -45,7 +45,7 @@ function Tutores() {
           <DialogContent><DialogHeader><DialogTitle>Registrar tutor</DialogTitle></DialogHeader>
             <div className="grid gap-3">
               {(["nombre", "rut", "email", "telefono", "direccion"] as const).map((k) => (
-                <Field key={k} label={k[0].toUpperCase() + k.slice(1)}><Input value={f[k]} onChange={(e) => setF({ ...f, [k]: e.target.value })} placeholder={k === "rut" ? "12.345.678-5" : ""} /></Field>
+                <Field key={k} label={k.charAt(0).toUpperCase() + k.slice(1)}><Input value={f[k]} onChange={(e) => setF({ ...f, [k]: e.target.value })} placeholder={k === "rut" ? "12.345.678-5" : ""} /></Field>
               ))}
               <Button onClick={save}>Guardar</Button>
             </div>
@@ -59,8 +59,8 @@ function Tutores() {
             <CardContent className="-mt-10 space-y-3">
               <div className="flex items-end justify-between">
                 {t.foto ? <img src={t.foto} alt={t.nombre} className="size-20 rounded-2xl border-4 border-card object-cover" loading="lazy" />
-                  : <div className="grid size-20 place-items-center rounded-2xl border-4 border-card bg-secondary text-2xl font-bold text-primary">{t.nombre[0]}</div>}
-                <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => { if (pets.length) return toast.error("Tiene mascotas asociadas"); s.set("tutores", s.tutores.filter((x) => x.id !== t.id)); }}><Trash2 /></Button>
+                  : <div className="grid size-20 place-items-center rounded-2xl border-4 border-card bg-secondary text-2xl font-bold text-primary">{t.nombre.charAt(0)}</div>}
+                <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => { if (pets.length) { toast.error("Tiene mascotas asociadas"); return; } s.set("tutores", s.tutores.filter((x) => x.id !== t.id)); }}><Trash2 /></Button>
               </div>
               <div><h3 className="text-xl font-semibold">{t.nombre}</h3><p className="text-sm text-muted-foreground">RUT {t.rut}</p></div>
               <div className="space-y-1 text-sm text-muted-foreground">
