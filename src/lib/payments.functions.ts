@@ -12,7 +12,7 @@ type Out = { ok: true; url: string; token?: string; ref: string } | { ok: false;
 const safe = async (fn: () => Promise<Out>): Promise<Out> => { try { return await fn(); } catch (e) { console.error(e); return { ok: false, error: "Error al contactar al proveedor" }; } };
 
 export const TBK = {
-  base: "https://webpay3gint.transbank.cl/rswebpay/webpayserver/api/webpay/v1.2/transactions",
+  base: "https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.2/transactions",
   // Official public integration credentials published by Transbank for testing.
   headers: () => ({ "Tbk-Api-Key-Id": process.env.TBK_COMMERCE_CODE ?? "597055555532", "Tbk-Api-Key-Secret": process.env.TBK_API_KEY ?? "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", "Content-Type": "application/json" }),
 };
