@@ -90,7 +90,7 @@ const DEFAULT_PROFILES: UserProfile[] = [
 ];
 
 function UserSessionBar() {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(DEFAULT_PROFILES[0]!);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
@@ -98,13 +98,13 @@ function UserSessionBar() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem("petcare-current-user");
-      if (saved) {
+      if (saved && saved !== "guest") {
         setCurrentUser(JSON.parse(saved));
       } else {
-        localStorage.setItem("petcare-current-user", JSON.stringify(DEFAULT_PROFILES[0]));
+        setCurrentUser(null);
       }
     } catch {
-      // Ignore storage errors
+      setCurrentUser(null);
     }
   }, []);
 
@@ -112,12 +112,13 @@ function UserSessionBar() {
     setCurrentUser(profile);
     localStorage.setItem("petcare-current-user", JSON.stringify(profile));
     setOpenModal(false);
-    toast.success(`Sesión cambiada a: ${profile.name} (${profile.role})`);
+    toast.success(`Sesión iniciada como: ${profile.name} (${profile.role})`);
   };
 
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem("petcare-current-user");
+    localStorage.setItem("petcare-current-user", "guest");
+    setOpenModal(false);
     toast.info("Has cerrado sesión en la plataforma");
   };
 
