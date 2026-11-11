@@ -32,7 +32,7 @@ function Fichas() {
   const historial = s.fichas.filter((x) => x.mascotaId === sel).sort((a, b) => b.fecha.localeCompare(a.fecha));
   const save = () => {
     const r = schema.safeParse(f);
-    if (!r.success) return toast.error(r.error.issues[0].message);
+    if (!r.success) { toast.error(r.error.issues[0]?.message ?? "Datos inválidos"); return; }
     s.set("fichas", [...s.fichas, { id: uid(), fecha: new Date().toISOString().slice(0, 10), ...r.data, proximoControl: r.data.proximoControl || undefined }]);
     setOpen(false); setSel(r.data.mascotaId); toast.success("Atención registrada en la ficha");
   };

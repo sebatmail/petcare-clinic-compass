@@ -23,7 +23,7 @@ describe("recordatorios y rut", () => {
       vacunas: [{ nombre: "Rabia", fecha: "", proxima: "2026-11-20" }, { nombre: "Óctuple", fecha: "", proxima: "2027-05-01" }] }];
     const r = recordatoriosPendientes(m, [], new Date("2026-11-11T12:00:00Z"));
     expect(r.map((x) => x.detalle)).toEqual(["Rabia"]);
-    expect(r[0].dias).toBe(9);
+    expect(r[0]?.dias).toBe(9);
   });
   it("valida RUT chileno", () => {
     expect(validarRut("11.111.111-1")).toBe(true);

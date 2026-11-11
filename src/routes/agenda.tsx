@@ -24,10 +24,10 @@ function Agenda() {
   const [f, setF] = useState({ mascotaId: "", vetId: s.vets[0]?.id ?? "", hora: "10:00", duracion: 30, motivo: "" });
   const mover = (n: number) => { const d = new Date(fecha + "T12:00:00"); d.setDate(d.getDate() + n); setFecha(d.toISOString().slice(0, 10)); };
   const crear = () => {
-    if (!f.mascotaId || f.motivo.trim().length < 3) return toast.error("Completa mascota y motivo");
+    if (!f.mascotaId || f.motivo.trim().length < 3) { toast.error("Completa mascota y motivo"); return; }
     const nueva = { ...f, motivo: f.motivo.trim().slice(0, 120), fecha };
     const err = validarCita(nueva, s.vets.find((v) => v.id === f.vetId), s.citas);
-    if (err) return toast.error(err);
+    if (err) { toast.error(err); return; }
     s.set("citas", [...s.citas, { id: uid(), ...nueva, estado: "Programada" }]); setOpen(false); toast.success("Cita agendada");
   };
   const cambiar = (id: string, estado: EstadoCita) => s.set("citas", s.citas.map((c) => c.id === id ? { ...c, estado } : c));

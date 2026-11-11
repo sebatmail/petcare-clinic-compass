@@ -6,10 +6,10 @@ export interface Mascota { id: string; tutorId: string; nombre: string; especie:
 export interface Veterinario { id: string; nombre: string; especialidad: string; inicio: string; fin: string; dias: number[]; foto?: string }
 export type EstadoCita = "Programada" | "Confirmada" | "Atendida" | "Cancelada";
 export interface Cita { id: string; mascotaId: string; vetId: string; fecha: string; hora: string; duracion: number; motivo: string; estado: EstadoCita }
-export interface Ficha { id: string; mascotaId: string; vetId: string; fecha: string; diagnostico: string; tratamiento: string; receta: string; examenes: string; proximoControl?: string }
-export interface Pago { id: string; fecha: string; concepto: string; monto: number; proveedor: string; estado: "Pendiente" | "Aprobado" | "Rechazado"; ref?: string }
+export interface Ficha { id: string; mascotaId: string; vetId: string; fecha: string; diagnostico: string; tratamiento: string; receta: string; examenes: string; proximoControl?: string | undefined }
+export interface Pago { id: string; fecha: string; concepto: string; monto: number; proveedor: string; estado: "Pendiente" | "Aprobado" | "Rechazado"; ref?: string | undefined }
 
-const toMin = (h: string) => { const [a, b] = h.split(":").map(Number); return a * 60 + b; };
+const toMin = (h: string) => { const [a, b] = h.split(":").map(Number); return (a ?? 0) * 60 + (b ?? 0); };
 
 /** Validates a new appointment: vet working day/hours and no overlap with that vet's active appointments. */
 export function validarCita(c: Omit<Cita, "id" | "estado">, vet: Veterinario | undefined, citas: Cita[]): string | null {
