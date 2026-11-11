@@ -37,3 +37,10 @@ __pycache__/
 *$py.class
 *.sqlite3-journal
 
+# Security & Private Keys (AWS & Environment)
+*.pem
+*.key
+.env
+*.tar.gz
+backend/.env
+
