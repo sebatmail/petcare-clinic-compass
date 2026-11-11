@@ -18,6 +18,15 @@
   🏛️ <b>Institución:</b> Instituto Profesional INACAP — Área Informática y Ciberseguridad
 </p>
 
+> [!IMPORTANT]
+> ### ☁️ Aplicación en Vivo Desplegada en AWS Cloud (Criterio 5 Rúbrica)
+> * 🌐 **IP Pública Funcional:** [http://44.193.33.51/](http://44.193.33.51/)
+> * 🔗 **DNS Público AWS EC2:** [http://ec2-44-193-33-51.compute-1.amazonaws.com/](http://ec2-44-193-33-51.compute-1.amazonaws.com/)
+> * 🛡️ **Panel Maestro Django Admin:** [http://44.193.33.51/admin/](http://44.193.33.51/admin/)
+> * ⚡ **API RESTful DRF:** [http://44.193.33.51/api/mascotas/](http://44.193.33.51/api/mascotas/)
+> * 📄 **Registro de Evidencia de IA:** [`prompts_ia.md`](prompts_ia.md) (Arquitectura 4+1)
+> * 🔑 **Acceso Docente Evaluador:** Usuario: `profe` | Clave: `123456` *(o `admin` / `admin123`)*
+
 [✨ Características](#-características-principales) •
 [🏛️ Rúbrica 100%](#-cumplimiento-de-la-rúbrica-de-evaluación) •
 [💳 Pasarelas de Pago](#-guía-de-prueba-de-pasarelas-de-pago-sandbox) •
@@ -162,8 +171,10 @@ npm run dev
 
 | Rol / Acceso | Usuario | Contraseña | Descripción |
 |:---|:---|:---|:---|
+| **Docente Evaluador (Profesor)** | `profe` | `123456` | Cuenta superusuario definida en la guía de evaluación |
 | **Superadministrador** | `admin` | `admin123` | Control total del Django Admin, auditoría de pagos y fichas |
-| **Médico Veterinario** | `vet_valentina` | `vet12345` | Acceso a agenda, atenciones clínicas y prescripciones |
+| **Médico Veterinario** | `vet_patricia` | `vet123` | Acceso a agenda, atenciones clínicas y prescripciones |
+| **Médico Veterinario** | `vet_carlos` | `vet123` | Cirugía y traumatología, fichas médicas |
 | **Tutor de Mascota** | `tutor_camila` | `tutor12345` | Portal de tutores para visualización de carnet y citas |
 
 ---
