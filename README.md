@@ -19,13 +19,17 @@
 </p>
 
 > [!IMPORTANT]
-> ### ☁️ Aplicación en Vivo Desplegada en AWS Cloud (Criterio 5 Rúbrica)
-> * 🌐 **IP Pública Funcional:** [http://44.193.33.51/](http://44.193.33.51/)
-> * 🔗 **DNS Público AWS EC2:** [http://ec2-44-193-33-51.compute-1.amazonaws.com/](http://ec2-44-193-33-51.compute-1.amazonaws.com/)
-> * 🛡️ **Panel Maestro Django Admin:** [http://44.193.33.51/admin/](http://44.193.33.51/admin/)
-> * ⚡ **API RESTful DRF:** [http://44.193.33.51/api/mascotas/](http://44.193.33.51/api/mascotas/)
-> * 📄 **Registro de Evidencia de IA:** [`prompts_ia.md`](prompts_ia.md) (Arquitectura 4+1)
-> * 🔑 **Acceso Docente Evaluador:** Usuario: `profe` | Clave: `123456` *(o `admin` / `admin123`)*
+> ### ☁️ Acceso en Vivo a la Plataforma Desplegada en AWS Cloud (Criterio 5 Rúbrica)
+> 
+> | Enlace / Servicio | Dirección Web | Credenciales de Acceso |
+> |---|---|---|
+> | 🌐 **Página Web Principal (React SPA)** | **[http://44.193.33.51/](http://44.193.33.51/)** | Acceso público directo |
+> | 🐾 **Catálogo de Mascotas (Fotos y Fichas)** | **[http://44.193.33.51/mascotas](http://44.193.33.51/mascotas)** | Acceso público directo |
+> | 📅 **Agenda Médica y Calendario** | **[http://44.193.33.51/agenda](http://44.193.33.51/agenda)** | Acceso público directo |
+> | 💳 **Pasarelas de Pago Webpay / MP** | **[http://44.193.33.51/pagos](http://44.193.33.51/pagos)** | Acceso público directo |
+> | 🛡️ **Panel Maestro Django Admin** | **[http://44.193.33.51/admin/](http://44.193.33.51/admin/)** | 👨‍🏫 **Docente:** `profe` / `123456`<br>👑 **Superadmin:** `admin` / `admin123` |
+> | ⚡ **API RESTful DRF (PostgreSQL)** | **[http://44.193.33.51/api/mascotas/](http://44.193.33.51/api/mascotas/)** | JSON endpoints con ORM |
+> | 📄 **Registro de Evidencia de IA** | [`prompts_ia.md`](prompts_ia.md) | Arquitectura 4+1 de Kruchten |
 
 [✨ Características](#-características-principales) •
 [🏛️ Rúbrica 100%](#-cumplimiento-de-la-rúbrica-de-evaluación) •
