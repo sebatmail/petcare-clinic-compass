@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendario y Agendamiento de Citas • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Agenda Médica & Control de Citas 📅</h2>
+            <p class="text-muted mb-0">Gestión de disponibilidad profesional con <b>detección y prevención de solapamientos</b></p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
+            <i class="bi bi-calendar-plus-fill"></i> Agendar Nueva Cita
+        </button>
+    </div>
+
+    <!-- Alert Box on Business Rule: Anti-Overlap -->
+    <div class="alert alert-info card-custom border-0 shadow-sm d-flex align-items-center gap-3 py-3 mb-4">
+        <div class="fs-4 text-info"><i class="bi bi-shield-check"></i></div>
+        <div style="font-size:0.88rem;">
+            <strong>Protección de Agenda Activa:</strong> El sistema analiza en tiempo real la disponibilidad de cada médico veterinario. Si intenta reservar una cita en un horario donde el profesional ya tiene una consulta activa, el sistema bloqueará la acción impidiendo el solapamiento.
+        </div>
+    </div>
+
+    <!-- Appointments Table & Status Manager -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-bold mb-3">Nómina de Citas Programadas</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>ID</th>
+                        <th>Fecha & Hora</th>
+                        <th>Paciente (Especie)</th>
+                        <th>Tutor / Teléfono</th>
+                        <th>Médico Veterinario</th>
+                        <th>Motivo Clínico</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                        <th>Costo Estimado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in citas %}
+                    <tr>
+                        <td class="font-monospace fw-bold text-muted">#{{ c.id }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ c.fecha_hora|date:"d/m/Y" }}</div>
+                            <span class="badge bg-light text-primary border"><i class="bi bi-clock me-1"></i>{{ c.fecha_hora|date:"H:i" }} hrs</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ c.mascota.foto }}" alt="Pet" class="rounded-circle" style="width:36px; height:36px; object-fit:cover;">
+                                <div>
+                                    <div class="fw-bold text-dark">{{ c.mascota.nombre }}</div>
+                                    <small class="text-muted">{{ c.mascota.get_especie_display }} ({{ c.mascota.peso_actual_kg }} kg)</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ c.mascota.tutor.nombre_completo }}</div>
+                            <a href="https://wa.me/{{ c.mascota.tutor.telefono }}" target="_blank" class="small text-success text-decoration-none">
+                                <i class="bi bi-whatsapp me-1"></i>{{ c.mascota.tutor.telefono }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">Dr(a). {{ c.veterinario.nombre_completo }}</div>
+                            <small class="text-teal" style="color:#0f766e;">{{ c.veterinario.get_especialidad_display }}</small>
+                        </td>
+                        <td>
+                            <div class="text-truncate" style="max-width: 180px;" title="{{ c.motivo }}">{{ c.motivo }}</div>
+                        </td>
+                        <td>{{ c.duracion_minutos }} min</td>
+                        <td>
+                            <span class="badge-status" style="background:{% if c.estado == 'COMPLETADA' %}#d1fae5; color:#065f46;{% elif c.estado == 'CONFIRMADA' %}#e0f2fe; color:#0369a1;{% elif c.estado == 'EN_ESPERA' %}#fef3c7; color:#92400e;{% elif c.estado == 'EN_ATENCION' %}#ede9fe; color:#5b21b6;{% else %}#fee2e2; color:#991b1b;{% endif %}">
+                                {{ c.get_estado_display }}
+                            </span>
+                        </td>
+                        <td class="fw-bold text-dark">${{ c.costo_estimado|default:0|floatformat:"0" }} CLP</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x display-6 d-block mb-2 text-muted"></i>
+                            No hay citas médicas registradas en la agenda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agendar Nueva Cita -->
+<div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus me-2"></i>Agendar Consulta Médica</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formCita">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Paciente (Mascota) *</label>
+                        <select name="mascota_id" class="form-select" required>
+                            <option value="">Seleccione el paciente...</option>
+                            {% for m in mascotas %}
+                            <option value="{{ m.id }}">{{ m.nombre }} ({{ m.get_especie_display }}) — Tutor: {{ m.tutor.nombre_completo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Médico Veterinario *</label>
+                        <select name="veterinario_id" id="vetSelect" class="form-select" required onchange="verificarDisponibilidadHoraria()">
+                            <option value="">Seleccione al profesional...</option>
+                            {% for v in veterinarios %}
+                            <option value="{{ v.id }}">Dr(a). {{ v.nombre_completo }} — {{ v.get_especialidad_display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Fecha y Hora de Inicio *</label>
+                            <input type="datetime-local" name="fecha_hora" id="fechaHoraInput" class="form-control" required onchange="verificarDisponibilidadHoraria()">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Duración (min) *</label>
+                            <select name="duracion_minutos" id="duracionSelect" class="form-select" onchange="verificarDisponibilidadHoraria()">
+                                <option value="30" selected>30 min</option>
+                                <option value="45">45 min</option>
+                                <option value="60">60 min (1 hr)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Live Conflict Indicator Box -->
+                    <div id="conflictAlert" class="d-none alert py-2 px-3 mb-3 border-0 rounded-3" style="font-size:0.83rem;"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Motivo de la Consulta *</label>
+                        <input type="text" name="motivo" class="form-control" required placeholder="Ej: Control post-operatorio, cojera pata izquierda, vacunación">
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Arancel Estimado (CLP)</label>
+                            <input type="number" name="costo_estimado" class="form-control" value="25000">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Notas previas</label>
+                            <input type="text" name="notas" class="form-control" placeholder="Ayuno previo, agresivo, etc.">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="btnSubmitCita" class="btn btn-teal">Confirmar Agendamiento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function verificarDisponibilidadHoraria() {
+        const vetId = document.getElementById('vetSelect').value;
+        const fechaHora = document.getElementById('fechaHoraInput').value;
+        const duracion = document.getElementById('duracionSelect').value;
+        const alertBox = document.getElementById('conflictAlert');
+        const submitBtn = document.getElementById('btnSubmitCita');
+
+        if (!vetId || !fechaHora) {
+            alertBox.classList.add('d-none');
+            submitBtn.disabled = false;
+            return;
+        }
+
+        try {
+            const resp = await fetch(`/api/citas/verificar_disponibilidad/?veterinario_id=${vetId}&fecha_hora=${fechaHora}&duracion=${duracion}`);
+            const data = await resp.json();
+
+            alertBox.classList.remove('d-none', 'alert-success', 'alert-danger');
+
+            if (data.conflicto_detectado) {
+                alertBox.classList.add('alert-danger');
+                alertBox.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i> <b>¡Horario Ocupado!</b> El profesional ya tiene la cita #${data.detalle_conflicto.id} (${data.detalle_conflicto.paciente} - ${data.detalle_conflicto.rango} hrs). Seleccione otro horario.`;
+                submitBtn.disabled = true;
+            } else {
+                alertBox.classList.add('alert-success');
+                alertBox.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> <b>Horario Disponible.</b> No hay conflictos de solapamiento para este médico.`;
+                submitBtn.disabled = false;
+            }
+        } catch (e) {
+            console.error('Error al validar disponibilidad:', e);
+        }
+    }
+</script>
+{% endblock %}

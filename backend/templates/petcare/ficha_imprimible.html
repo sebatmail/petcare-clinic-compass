@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Clínica #{{ ficha.id }} • {{ ficha.mascota.nombre }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #1e293b; padding: 30px; }
+        .document-container { max-width: 850px; margin: 0 auto; background: white; padding: 45px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; }
+        .header-logo { width: 50px; height: 50px; background: #0d9488; color: white; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; }
+        .box-section { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 20px; background: #fafafa; }
+        @media print {
+            body { background: white; padding: 0; }
+            .document-container { box-shadow: none; border: none; padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="document-container">
+        <!-- Action Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom no-print">
+            <button onclick="window.print()" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-printer-fill"></i> Imprimir / Guardar en PDF
+            </button>
+            <button onclick="window.close()" class="btn btn-outline-secondary">Cerrar Ventana</button>
+        </div>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="header-logo">🐾</div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">PetCare Clínica Veterinaria</h3>
+                    <div class="text-muted small">Atención Médica Avanzada • Cirugía • Laboratorio Clínico</div>
+                    <div class="text-muted small">Av. Providencia 1234, Santiago • Tel: +56 2 2987 6543 • www.petcare.cl</div>
+                </div>
+            </div>
+            <div class="text-end">
+                <div class="badge bg-secondary fs-6 px-3 py-2 font-monospace">FICHA CLÍNICA #{{ ficha.id }}</div>
+                <div class="small text-muted mt-2">Fecha: <b>{{ ficha.fecha_atencion|date:"d/m/Y H:i" }} hrs</b></div>
+            </div>
+        </div>
+
+        <!-- Paciente & Tutor Information -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="box-section h-100">
+                    <h6 class="fw-bold text-uppercase text-secondary border-bottom pb-2 mb-2" style="font-size:0.75rem;">Datos del Paciente</h6>
+                    <div><b>Nombre:</b> {{ ficha.mascota.nombre }}</div>
+                    <div><b>Especie / Raza:</b> {{ ficha.mascota.get_especie_display }} • {{ ficha.mascota.raza }}</div>
+                    <div><b>Sexo / Edad:</b> {{ ficha.mascota.get_sexo_display }} • {{ ficha.mascota.edad_calculada }}</div>
+                    <div><b>Microchip:</b> {{ ficha.mascota.numero_chip|default:"No posee" }}</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="box-section h-100">
+                    <h6 class="fw-bold text-uppercase text-secondary border-bottom pb-2 mb-2" style="font-size:0.75rem;">Datos del Tutor Responsable</h6>
+                    <div><b>Nombre:</b> {{ ficha.mascota.tutor.nombre_completo }}</div>
+                    <div><b>RUT:</b> {{ ficha.mascota.tutor.rut }}</div>
+                    <div><b>Teléfono:</b> {{ ficha.mascota.tutor.telefono }}</div>
+                    <div><b>Correo:</b> {{ ficha.mascota.tutor.email }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Triaje de Constantes Vitales -->
+        <h6 class="fw-bold text-uppercase text-dark mb-2" style="font-size:0.8rem;">1. Triaje de Constantes Vitales en Consulta</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered text-center align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem;">
+                        <th>Temperatura</th>
+                        <th>Frecuencia Cardíaca</th>
+                        <th>Frecuencia Respiratoria</th>
+                        <th>Peso Actual</th>
+                        <th>Condición Corporal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold text-danger">{{ ficha.temperatura_c }} °C</td>
+                        <td class="fw-bold text-primary">{{ ficha.frecuencia_cardiaca_lpm }} LPM</td>
+                        <td class="fw-bold text-success">{{ ficha.frecuencia_respiratoria_rpm }} RPM</td>
+                        <td class="fw-bold text-dark">{{ ficha.peso_kg }} Kg</td>
+                        <td>{{ ficha.condicion_corporal }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Anamnesis & Examen Físico -->
+        <h6 class="fw-bold text-uppercase text-dark mb-2" style="font-size:0.8rem;">2. Evolución Clínica</h6>
+        <div class="box-section mb-4">
+            <div class="mb-3">
+                <b class="text-secondary small d-block">ANAMNESIS / HISTORIA CLÍNICA:</b>
+                <p class="mb-0">{{ ficha.anamnesis }}</p>
+            </div>
+            {% if ficha.hallazgos_examen_fisico %}
+            <div class="mb-3">
+                <b class="text-secondary small d-block">HALLAZGOS DEL EXAMEN FÍSICO:</b>
+                <p class="mb-0">{{ ficha.hallazgos_examen_fisico }}</p>
+            </div>
+            {% endif %}
+            <div class="p-3 bg-white border border-success rounded-3">
+                <b class="text-success small d-block">DIAGNÓSTICO PRINCIPAL CONFIRMADO:</b>
+                <h5 class="fw-bold text-dark mb-0">{{ ficha.diagnostico_principal }}</h5>
+            </div>
+        </div>
+
+        <!-- Recetas Prescritas -->
+        {% if ficha.recetas.all %}
+        <h6 class="fw-bold text-uppercase text-dark mb-2" style="font-size:0.8rem;">3. Prescripción Médica y Farmacología</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle mb-0">
+                <thead class="table-light" style="font-size:0.8rem;">
+                    <tr>
+                        <th>Fármaco / Medicamento</th>
+                        <th>Dosis e Intervalo</th>
+                        <th>Vía</th>
+                        <th>Duración</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in ficha.recetas.all %}
+                    <tr>
+                        <td><b>{{ r.medicamento }}</b></td>
+                        <td>{{ r.dosis }}</td>
+                        <td>{{ r.via_administracion }}</td>
+                        <td>{{ r.duracion_dias }} días</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Indicaciones Generales -->
+        <h6 class="fw-bold text-uppercase text-dark mb-2" style="font-size:0.8rem;">4. Indicaciones y Cuidados en Domicilio</h6>
+        <div class="box-section mb-4">
+            <p class="mb-0">{{ ficha.indicaciones_generales }}</p>
+        </div>
+
+        <!-- Firma Médico -->
+        <div class="row pt-4 mt-5 text-center">
+            <div class="col-6 mx-auto">
+                <div class="border-top pt-2">
+                    <div class="fw-bold text-dark">Dr(a). {{ ficha.veterinario.nombre_completo }}</div>
+                    <div class="small text-muted">{{ ficha.veterinario.get_especialidad_display }}</div>
+                    <div class="small text-muted">Reg. Colegio Médico Veterinario: <b>{{ ficha.veterinario.numero_colegiado }}</b></div>
+                    <div class="small text-success mt-1"><i class="bi bi-shield-check me-1"></i>Firma Digitalizada Verificada</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard General • PetCare Clínica Veterinaria{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Welcome Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1 text-slate-800">Panel Ejecutivo Clínico 🐾</h2>
+            <p class="text-muted mb-0">Gestión de Citas, Fichas Médicas Digitales y Facturación en Tiempo Real</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'citas' %}" class="btn btn-teal shadow-sm d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-plus"></i> Agendar Cita
+            </a>
+            <a href="{% url 'tutores' %}" class="btn btn-light border shadow-sm d-flex align-items-center gap-2">
+                <i class="bi bi-person-plus"></i> Nuevo Tutor
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Key Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Citas Hoy -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-custom p-3 border-0" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:white;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="text-white text-opacity-75 text-uppercase fw-semibold" style="font-size:0.75rem;">Citas de Hoy</span>
+                        <h2 class="fw-bold my-1 text-white">{{ citas_hoy_count }}</h2>
+                        <small class="text-white text-opacity-75"><i class="bi bi-clock-history me-1"></i> Agenda diaria activa</small>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-3 rounded-circle text-white">
+                        <i class="bi bi-calendar-check fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pacientes Totales -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-custom p-3 border-0" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="text-white text-opacity-75 text-uppercase fw-semibold" style="font-size:0.75rem;">Pacientes Registrados</span>
+                        <h2 class="fw-bold my-1 text-white">{{ total_mascotas }}</h2>
+                        <small class="text-white text-opacity-75"><i class="bi bi-shield-check me-1"></i> {{ total_tutores }} Tutores activos</small>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-3 rounded-circle text-white">
+                        <i class="fa-solid fa-paw fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas de Vacunación -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-custom p-3 border-0" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="text-white text-opacity-75 text-uppercase fw-semibold" style="font-size:0.75rem;">Vacunas x Vencer / Vencidas</span>
+                        <h2 class="fw-bold my-1 text-white">{{ vacunas_alertas }}</h2>
+                        <small class="text-white text-opacity-75"><i class="bi bi-exclamation-triangle me-1"></i> {{ vacunas_vencidas }} Vencidas | {{ vacunas_por_vencer }} Próx.</small>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-3 rounded-circle text-white">
+                        <i class="fa-solid fa-syringe fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Facturación Mensual -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card-custom p-3 border-0" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color:white;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="text-white text-opacity-75 text-uppercase fw-semibold" style="font-size:0.75rem;">Facturado este Mes</span>
+                        <h2 class="fw-bold my-1 text-white">${{ ingresos_mes|default:0|floatformat:"0" }} CLP</h2>
+                        <small class="text-white text-opacity-75"><i class="bi bi-credit-card me-1"></i> Transbank & Pasarelas</small>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-3 rounded-circle text-white">
+                        <i class="bi bi-cash-coin fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Shortcuts -->
+    <div class="row g-4 mb-4">
+        <!-- Interactive Chart: Distribution of Pets by Species -->
+        <div class="col-12 col-lg-7">
+            <div class="card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-0">Distribución de Pacientes por Especie</h5>
+                        <small class="text-muted">Registro biomédico veterinario en tiempo real</small>
+                    </div>
+                    <span class="badge bg-light text-dark border">Población Activa</span>
+                </div>
+                <div style="height: 260px;">
+                    <canvas id="speciesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Modules Hub -->
+        <div class="col-12 col-lg-5">
+            <div class="card-custom p-4 h-100">
+                <h5 class="fw-bold mb-3">Accesos Directos a Módulos Clave</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'citas' %}" class="btn btn-light border text-start p-3 rounded-3 d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="p-2 rounded-2 bg-primary bg-opacity-10 text-primary fs-5"><i class="bi bi-calendar-range"></i></span>
+                            <div>
+                                <div class="fw-semibold">Agenda con Anti-Solapamiento</div>
+                                <small class="text-muted">Evita duplicidad de horas de veterinarios</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+
+                    <a href="{% url 'fichas' %}" class="btn btn-light border text-start p-3 rounded-3 d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="p-2 rounded-2 bg-success bg-opacity-10 text-success fs-5"><i class="bi bi-file-earmark-medical"></i></span>
+                            <div>
+                                <div class="fw-semibold">Ficha Clínica Digital & Recetas</div>
+                                <small class="text-muted">Diagnósticos, triaje y farmacología</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+
+                    <a href="{% url 'vacunacion' %}" class="btn btn-light border text-start p-3 rounded-3 d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="p-2 rounded-2 bg-warning bg-opacity-10 text-warning fs-5"><i class="fa-solid fa-bell"></i></span>
+                            <div>
+                                <div class="fw-semibold">Recordatorios Automatizados</div>
+                                <small class="text-muted">Despacho preventivo multicanal</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+
+                    <a href="{% url 'pagos' %}" class="btn btn-light border text-start p-3 rounded-3 d-flex align-items-center justify-content-between hover-shadow">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="p-2 rounded-2 bg-indigo bg-opacity-10 text-indigo fs-5" style="color:#6366f1;"><i class="bi bi-credit-card-2-front"></i></span>
+                            <div>
+                                <div class="fw-semibold">Pasarelas de Pago de Prueba</div>
+                                <small class="text-muted">Transbank Webpay, Mercado Pago, PayPal</small>
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Tables Row: Upcoming Appointments & Recent Clinical Records -->
+    <div class="row g-4">
+        <!-- Upcoming Appointments -->
+        <div class="col-12 col-xl-6">
+            <div class="card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-teal me-2" style="color:#0d9488;"></i>Próximas Citas Agendadas</h5>
+                    <a href="{% url 'citas' %}" class="btn btn-sm btn-link text-decoration-none">Ver todas &rarr;</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr style="font-size:0.8rem; text-transform:uppercase;">
+                                <th>Paciente / Tutor</th>
+                                <th>Fecha & Hora</th>
+                                <th>Médico Veterinario</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in proximas_citas %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ c.mascota.foto }}" alt="Pet" class="rounded-circle" style="width:32px; height:32px; object-fit:cover;">
+                                        <div>
+                                            <div class="fw-semibold">{{ c.mascota.nombre }}</div>
+                                            <small class="text-muted">{{ c.mascota.tutor.nombre_completo }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">{{ c.fecha_hora|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">{{ c.fecha_hora|date:"H:i" }} hrs</small>
+                                </td>
+                                <td>
+                                    <small class="fw-semibold text-dark">Dr(a). {{ c.veterinario.nombre_completo }}</small><br>
+                                    <small class="text-muted">{{ c.veterinario.get_especialidad_display }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge-status" style="background:{% if c.estado == 'COMPLETADA' %}#d1fae5; color:#065f46;{% elif c.estado == 'CONFIRMADA' %}#e0f2fe; color:#0369a1;{% elif c.estado == 'EN_ESPERA' %}#fef3c7; color:#92400e;{% else %}#ede9fe; color:#5b21b6;{% endif %}">
+                                        {{ c.get_estado_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No hay citas pendientes programadas para hoy.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Clinical Records -->
+        <div class="col-12 col-xl-6">
+            <div class="card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-medical text-teal me-2" style="color:#0d9488;"></i>Atenciones Clínicas Recientes</h5>
+                    <a href="{% url 'fichas' %}" class="btn btn-sm btn-link text-decoration-none">Ver fichas &rarr;</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr style="font-size:0.8rem; text-transform:uppercase;">
+                                <th>Paciente</th>
+                                <th>Fecha</th>
+                                <th>Diagnóstico Principal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in fichas_recientes %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ f.mascota.nombre }}</div>
+                                    <small class="text-muted">{{ f.mascota.get_especie_display }} • {{ f.peso_kg }} kg</small>
+                                </td>
+                                <td>{{ f.fecha_atencion|date:"d/m/Y" }}</td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 220px;" title="{{ f.diagnostico_principal }}">
+                                        {{ f.diagnostico_principal }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'ficha_imprimible' f.id %}" target="_blank" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Imprimir / Exportar">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No hay fichas clínicas registradas recientemente.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Inicializar Gráfico de Especies
+    const especiesData = {{ especies_chart|safe }};
+    const labels = especiesData.map(item => item.especie);
+    const counts = especiesData.map(item => item.count);
+
+    const ctx = document.getElementById('speciesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: [
+                    '#0d9488', '#2563eb', '#7c3aed', '#f59e0b', '#dc2626', '#64748b'
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 14,
+                        font: { size: 12, family: 'Inter' }
+                    }
+                }
+            },
+            cutout: '65%'
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+      <defs>
+        <linearGradient id="pgrad_pet_" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#10b981"/>
+          <stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="116" height="116" rx="28" fill="url(#pgrad_pet_)" stroke="#e2e8f0" stroke-width="4"/>
+      <circle cx="60" cy="55" r="32" fill="#ffffff" opacity="0.2"/>
+      <text x="60" y="68" font-size="44" text-anchor="middle">🦜</text>
+      <rect x="20" y="92" width="80" height="20" rx="10" fill="#ffffff" opacity="0.9"/>
+      <text x="60" y="106" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">Ave</text>
+    </svg>

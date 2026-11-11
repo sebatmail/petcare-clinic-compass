@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fichas Médicas Digitales y Recetas • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Fichas Médicas & Historial Clínico 🩺</h2>
+            <p class="text-muted mb-0">Atenciones clínicas integrales, triaje de constantes vitales, recetas y exámenes</p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNuevaFicha">
+            <i class="bi bi-file-earmark-plus-fill"></i> Nueva Atención Médica
+        </button>
+    </div>
+
+    <!-- Fichas List -->
+    <div class="row g-4">
+        {% for f in fichas %}
+        <div class="col-12 col-xl-6">
+            <div class="card-custom p-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="{{ f.mascota.foto }}" alt="Pet" class="rounded-3 shadow-sm" style="width:48px; height:48px; object-fit:cover;">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">{{ f.mascota.nombre }}</h5>
+                            <small class="text-muted">{{ f.mascota.get_especie_display }} • {{ f.mascota.raza }} | Tutor: <b>{{ f.mascota.tutor.nombre_completo }}</b></small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-light text-dark border font-monospace">Ficha #{{ f.id }}</span>
+                        <div class="small text-muted mt-1">{{ f.fecha_atencion|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
+
+                <!-- Constantes Fisiológicas (Triaje) -->
+                <div class="bg-light p-3 rounded-3 mb-3 border">
+                    <div class="row g-2 text-center" style="font-size:0.83rem;">
+                        <div class="col-3">
+                            <span class="text-muted d-block">Temperatura</span>
+                            <b class="text-danger"><i class="bi bi-thermometer-half me-1"></i>{{ f.temperatura_c }} °C</b>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted d-block">FC (Cardíaca)</span>
+                            <b class="text-primary"><i class="bi bi-heart-pulse me-1"></i>{{ f.frecuencia_cardiaca_lpm }} lpm</b>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted d-block">FR (Respiratoria)</span>
+                            <b class="text-success"><i class="bi bi-wind me-1"></i>{{ f.frecuencia_respiratoria_rpm }} rpm</b>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted d-block">Peso Actual</span>
+                            <b class="text-dark"><i class="bi bi-speedometer2 me-1"></i>{{ f.peso_kg }} Kg</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anamnesis & Diagnóstico -->
+                <div class="mb-3 flex-grow-1">
+                    <div class="mb-2">
+                        <strong class="text-slate-700" style="font-size:0.88rem;">Anamnesis / Motivo:</strong>
+                        <p class="text-muted mb-1 small">{{ f.anamnesis }}</p>
+                    </div>
+                    <div>
+                        <strong class="text-dark" style="font-size:0.88rem;">Diagnóstico Principal:</strong>
+                        <div class="p-2 rounded-2 bg-success bg-opacity-10 text-success fw-semibold small border border-success border-opacity-25 mt-1">
+                            <i class="bi bi-check2-circle me-1"></i>{{ f.diagnostico_principal }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescriptions / Recetas -->
+                {% if f.recetas.all %}
+                <div class="p-2 rounded-3 bg-indigo bg-opacity-10 mb-3 border border-indigo border-opacity-25" style="background:#eef2ff;">
+                    <div class="d-flex align-items-center gap-1 text-indigo fw-bold small mb-1" style="color:#4338ca;">
+                        <i class="bi bi-capsule"></i> Receta Prescrita:
+                    </div>
+                    <ul class="list-unstyled mb-0 small">
+                        {% for r in f.recetas.all %}
+                        <li class="text-dark">
+                            <b>{{ r.medicamento }}</b> — {{ r.dosis }} (por {{ r.duracion_dias }} días, vía {{ r.via_administracion }})
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Footer with Veterinarian and Print action -->
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                    <small class="text-muted">
+                        <i class="bi bi-person-badge me-1"></i>Médico Tratante: <b>Dr(a). {{ f.veterinario.nombre_completo }}</b>
+                    </small>
+                    <a href="{% url 'ficha_imprimible' f.id %}" target="_blank" class="btn btn-sm btn-outline-teal d-flex align-items-center gap-1" style="color:#0d9488;">
+                        <i class="bi bi-printer"></i> Imprimir / Exportar Ficha
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-file-earmark-medical display-6 d-block mb-2 text-muted"></i>
+            No hay atenciones clínicas emitidas aún. Haga clic en "Nueva Atención Médica".
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal Nueva Atención Médica -->
+<div class="modal fade" id="modalNuevaFicha" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-medical-fill me-2"></i>Nueva Atención Médica y Ficha Clínica</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Paciente *</label>
+                            <select name="mascota_id" class="form-select" required>
+                                <option value="">Seleccione el paciente...</option>
+                                {% for m in mascotas %}
+                                <option value="{{ m.id }}">{{ m.nombre }} ({{ m.get_especie_display }}) — Tutor: {{ m.tutor.nombre_completo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Médico Veterinario Tratante *</label>
+                            <select name="veterinario_id" class="form-select" required>
+                                <option value="">Seleccione el profesional...</option>
+                                {% for v in veterinarios %}
+                                <option value="{{ v.id }}">Dr(a). {{ v.nombre_completo }} ({{ v.get_especialidad_display }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-teal border-bottom pb-2 mt-4" style="color:#0f766e;">1. Triaje de Constantes Vitales</h6>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Temperatura (°C) *</label>
+                            <input type="number" step="0.1" name="temperatura_c" class="form-control" value="38.5" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">FC (LPM) *</label>
+                            <input type="number" name="frecuencia_cardiaca_lpm" class="form-control" value="120" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">FR (RPM) *</label>
+                            <input type="number" name="frecuencia_respiratoria_rpm" class="form-control" value="25" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Peso en Consulta (Kg) *</label>
+                            <input type="number" step="0.1" name="peso_kg" class="form-control" value="5.2" required>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-teal border-bottom pb-2 mt-4" style="color:#0f766e;">2. Evaluación Clínica & Diagnóstico</h6>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Anamnesis / Motivo de Consulta *</label>
+                        <textarea name="anamnesis" class="form-control" rows="2" required placeholder="Tutor refiere decaimiento de 2 días, inapetencia y vómito ocasional..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Hallazgos al Examen Físico</label>
+                        <textarea name="hallazgos_examen_fisico" class="form-control" rows="2" placeholder="Mucosas rosadas, ganglios normales, leve dolor a la palpación epigástrica..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Diagnóstico Principal *</label>
+                        <input type="text" name="diagnostico_principal" class="form-control" required placeholder="Ej: Gastroenteritis aguda de origen dietario">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Indicaciones Generales para el Tutor</label>
+                        <textarea name="indicaciones_generales" class="form-control" rows="2" placeholder="Dieta blanda (pollo hervido con arroz), abundante agua fresca, reposo..."></textarea>
+                    </div>
+
+                    <h6 class="fw-bold text-teal border-bottom pb-2 mt-4" style="color:#0f766e;">3. Prescripción Farmacológica (Receta Médica Opcional)</h6>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-5">
+                            <label class="form-label small fw-semibold">Medicamento</label>
+                            <input type="text" name="receta_medicamento" class="form-control" placeholder="Ej: Amoxicilina + Ác. Clavulánico 250mg">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Dosis y Frecuencia</label>
+                            <input type="text" name="receta_dosis" class="form-control" placeholder="Ej: 1 comprimido cada 12 hrs">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Duración (Días)</label>
+                            <input type="number" name="receta_duracion" class="form-control" value="7">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal">Guardar y Emitir Ficha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

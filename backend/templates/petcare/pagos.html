@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Caja y Pasarelas de Pago de Prueba • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Caja & Pasarelas de Pago de Prueba 💳</h2>
+            <p class="text-muted mb-0">Integración con <b>Transbank Webpay Plus</b>, <b>Mercado Pago Sandbox</b>, <b>PayPal</b> y <b>Cripto Testnet</b></p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCheckout">
+            <i class="bi bi-wallet2"></i> Cobrar / Nuevo Pago en Línea
+        </button>
+    </div>
+
+    <!-- Official Test Gateways Badges Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-3">
+            <div class="card-custom p-3 border-0" style="background:#002B49; color:white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-danger mb-1">Chile Sandbox</span>
+                        <h6 class="fw-bold mb-0">Transbank Webpay</h6>
+                        <small style="color:#93c5fd; font-size:0.75rem;">Comercio: 597055555532</small>
+                    </div>
+                    <div class="fs-2 text-warning"><i class="bi bi-credit-card-fill"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card-custom p-3 border-0" style="background:#009EE3; color:white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-light text-dark mb-1">Latam Sandbox</span>
+                        <h6 class="fw-bold mb-0">Mercado Pago</h6>
+                        <small style="color:#e0f2fe; font-size:0.75rem;">Checkout Pro & QR</small>
+                    </div>
+                    <div class="fs-2 text-white"><i class="bi bi-qr-code-scan"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card-custom p-3 border-0" style="background:#003087; color:white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-1">Global Sandbox</span>
+                        <h6 class="fw-bold mb-0">PayPal Sandbox</h6>
+                        <small style="color:#93c5fd; font-size:0.75rem;">Smart Buttons API</small>
+                    </div>
+                    <div class="fs-2 text-warning"><i class="bi bi-paypal"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="card-custom p-3 border-0" style="background:#1e293b; color:white;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-1">Web3 Testnet</span>
+                        <h6 class="fw-bold mb-0">CriptoPay Test</h6>
+                        <small style="color:#cbd5e1; font-size:0.75rem;">USDT / Sepolia Mock</small>
+                    </div>
+                    <div class="fs-2 text-warning"><i class="fa-brands fa-bitcoin"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments Ledger Table -->
+    <div class="card-custom p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Historial de Transacciones & Vouchers Electrónicos</h5>
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 fw-bold">
+                Total Recaudado: ${{ total_recaudado|default:0|floatformat:"0" }} CLP
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>ID / Token</th>
+                        <th>Fecha & Hora</th>
+                        <th>Tutor / Cliente</th>
+                        <th>Concepto Clínico</th>
+                        <th>Pasarela Utilizada</th>
+                        <th>Monto (CLP)</th>
+                        <th>Cód. Autorización</th>
+                        <th>Estado</th>
+                        <th>Comprobante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pagos %}
+                    <tr>
+                        <td class="font-monospace fw-bold" style="font-size:0.8rem;">{{ p.transaccion_id }}</td>
+                        <td>{{ p.fecha_pago|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ p.tutor.nombre_completo }}</div>
+                            <small class="text-muted">RUT: {{ p.tutor.rut }}</small>
+                        </td>
+                        <td>{{ p.concepto }}</td>
+                        <td>
+                            {% if 'TRANSBANK' in p.metodo_pago %}
+                            <span class="badge" style="background:#002B49; color:white;"><i class="bi bi-credit-card me-1"></i>Webpay Plus</span>
+                            {% elif 'MERCADO' in p.metodo_pago %}
+                            <span class="badge" style="background:#009EE3; color:white;"><i class="bi bi-qr-code me-1"></i>Mercado Pago</span>
+                            {% elif 'PAYPAL' in p.metodo_pago %}
+                            <span class="badge" style="background:#003087; color:white;"><i class="bi bi-paypal me-1"></i>PayPal</span>
+                            {% elif 'CRIPTO' in p.metodo_pago %}
+                            <span class="badge bg-dark text-warning"><i class="fa-brands fa-bitcoin me-1"></i>CriptoPay</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ p.get_metodo_pago_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold text-dark">${{ p.monto_clp|default:0|floatformat:"0" }}</td>
+                        <td><span class="badge bg-light text-dark border font-monospace">{{ p.codigo_autorizacion }}</span></td>
+                        <td>
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>{{ p.get_estado_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'voucher_pago' p.id %}" target="_blank" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 py-1 px-2" title="Ver Voucher">
+                                <i class="bi bi-receipt"></i> Voucher
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">No hay transacciones registradas en caja.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Checkout Multicanal -->
+<div class="modal fade" id="modalCheckout" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-wallet2 me-2"></i>Pasarela de Pago Electrónico (Sandbox Oficial)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Tutor / Pagador *</label>
+                            <select name="tutor_id" class="form-select" required>
+                                <option value="">Seleccione el tutor...</option>
+                                {% for t in tutores %}
+                                <option value="{{ t.id }}">{{ t.nombre_completo }} (RUT: {{ t.rut }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Cita Asociada (Opcional)</label>
+                            <select name="cita_id" class="form-select">
+                                <option value="">Sin cita vinculada...</option>
+                                {% for c in citas_pendientes %}
+                                <option value="{{ c.id }}">Cita #{{ c.id }} - {{ c.mascota.nombre }} ({{ c.motivo }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Concepto / Glosa Médica *</label>
+                            <input type="text" name="concepto" class="form-control" value="Consulta Veterinaria General y Vacunación" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Monto a Cobrar (CLP) *</label>
+                            <input type="number" name="monto_clp" class="form-control fw-bold" value="25000" required>
+                        </div>
+                    </div>
+
+                    <!-- Gateway Selection Tabs -->
+                    <label class="form-label fw-semibold mb-2">Seleccione Pasarela de Pago para Evaluación *</label>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <input type="radio" class="btn-check" name="metodo_pago" id="gateTbk" value="TRANSBANK_WEBPAY" checked>
+                            <label class="btn btn-outline-primary w-100 p-3 text-center rounded-3 h-100" for="gateTbk">
+                                <i class="bi bi-credit-card fs-3 d-block mb-1"></i>
+                                <b>Transbank</b>
+                                <div class="small" style="font-size:0.72rem;">Webpay Plus</div>
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="radio" class="btn-check" name="metodo_pago" id="gateMp" value="MERCADO_PAGO">
+                            <label class="btn btn-outline-info w-100 p-3 text-center rounded-3 h-100" for="gateMp">
+                                <i class="bi bi-qr-code fs-3 d-block mb-1"></i>
+                                <b>Mercado Pago</b>
+                                <div class="small" style="font-size:0.72rem;">Sandbox QR</div>
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="radio" class="btn-check" name="metodo_pago" id="gatePp" value="PAYPAL_SANDBOX">
+                            <label class="btn btn-outline-secondary w-100 p-3 text-center rounded-3 h-100" for="gatePp">
+                                <i class="bi bi-paypal fs-3 d-block mb-1"></i>
+                                <b>PayPal</b>
+                                <div class="small" style="font-size:0.72rem;">Sandbox Global</div>
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="radio" class="btn-check" name="metodo_pago" id="gateCripto" value="CRIPTO_TEST">
+                            <label class="btn btn-outline-dark w-100 p-3 text-center rounded-3 h-100" for="gateCripto">
+                                <i class="fa-brands fa-bitcoin fs-3 d-block mb-1 text-warning"></i>
+                                <b>CriptoPay</b>
+                                <div class="small" style="font-size:0.72rem;">USDT Testnet</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sandbox Notice -->
+                    <div class="alert alert-secondary py-2 px-3 small border-0 rounded-3 mb-0" style="font-size:0.8rem;">
+                        <i class="bi bi-info-circle me-1"></i> <b>Modo Evaluación Sandbox:</b> Se comunicará con las credenciales oficiales de prueba de Transbank / Mercado Pago, generando un código de autorización bancario simulado y un comprobante electrónico (Voucher) con formato regulado.
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal"><i class="bi bi-lock-fill me-1"></i>Procesar Pago Simulado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

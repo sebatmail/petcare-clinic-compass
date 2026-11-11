@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mascotas y Pacientes • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Registro de Pacientes Veterinarios 🐾</h2>
+            <p class="text-muted mb-0">Catálogo clínico de mascotas, fichas biométricas y microchips</p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNuevaMascota">
+            <i class="fa-solid fa-plus"></i> Ingresar Paciente
+        </button>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card-custom p-3 mb-4">
+        <form method="GET" class="row g-3 align-items-center">
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ query }}" class="form-control border-start-0" placeholder="Buscar por Nombre mascota, N° Chip o Tutor...">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <select name="especie" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas las Especies</option>
+                    <option value="CANINO" {% if filtro_especie == 'CANINO' %}selected{% endif %}>Caninos (Perros)</option>
+                    <option value="FELINO" {% if filtro_especie == 'FELINO' %}selected{% endif %}>Felinos (Gatos)</option>
+                    <option value="AVE" {% if filtro_especie == 'AVE' %}selected{% endif %}>Aves</option>
+                    <option value="ROEDOR" {% if filtro_especie == 'ROEDOR' %}selected{% endif %}>Roedores / Conejos</option>
+                    <option value="EXOTICO" {% if filtro_especie == 'EXOTICO' %}selected{% endif %}>Animales Exóticos</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-teal w-100">Filtrar</button>
+                {% if query or filtro_especie %}
+                <a href="{% url 'mascotas' %}" class="btn btn-light border"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Pets Table -->
+    <div class="card-custom p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>Foto</th>
+                        <th>Nombre Paciente</th>
+                        <th>Especie & Raza</th>
+                        <th>Sexo</th>
+                        <th>Edad</th>
+                        <th>Peso Actual</th>
+                        <th>N° Microchip</th>
+                        <th>Tutor Responsable</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mascotas %}
+                    <tr>
+                        <td>
+                            <img src="{{ m.foto }}" alt="Pet" class="rounded-3 shadow-sm" style="width:48px; height:48px; object-fit:cover; border:2px solid #e2e8f0;">
+                        </td>
+                        <td>
+                            <div class="fw-bold fs-6 text-dark">{{ m.nombre }}</div>
+                            <small class="text-muted">{{ m.color|default:"Sin color especificado" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge-status" style="background:{% if m.especie == 'CANINO' %}#dbeafe; color:#1e40af;{% elif m.especie == 'FELINO' %}#f3e8ff; color:#6b21a8;{% elif m.especie == 'AVE' %}#d1fae5; color:#065f46;{% else %}#fef3c7; color:#92400e;{% endif %}">
+                                {{ m.get_especie_display }}
+                            </span>
+                            <div class="small text-muted mt-1">{{ m.raza }}</div>
+                        </td>
+                        <td>
+                            {% if m.sexo == 'MACHO' %}
+                            <span class="text-primary fw-medium"><i class="bi bi-gender-male me-1"></i>Macho</span>
+                            {% else %}
+                            <span class="text-danger fw-medium"><i class="bi bi-gender-female me-1"></i>Hembra</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="fw-semibold">{{ m.edad_calculada }}</span>
+                            <div class="small text-muted">{{ m.fecha_nacimiento|date:"d/m/Y" }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border px-2 py-1 fs-7 fw-bold">{{ m.peso_actual_kg }} Kg</span>
+                        </td>
+                        <td>
+                            {% if m.numero_chip %}
+                            <span class="badge bg-secondary font-monospace"><i class="bi bi-cpu me-1"></i>{{ m.numero_chip }}</span>
+                            {% else %}
+                            <small class="text-muted">No registrado</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ m.tutor.nombre_completo }}</div>
+                            <small class="text-muted">{{ m.tutor.telefono }}</small>
+                        </td>
+                        <td>
+                            <a href="{% url 'fichas' %}" class="btn btn-sm btn-outline-teal d-flex align-items-center gap-1 border" style="color:#0d9488;" title="Ver Ficha Clínica">
+                                <i class="bi bi-file-earmark-medical"></i> Ficha
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-shield-cat display-6 d-block mb-2 text-muted"></i>
+                            No hay pacientes registrados que coincidan con la búsqueda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ingresar Mascota -->
+<div class="modal fade" id="modalNuevaMascota" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-paw me-2"></i>Ingresar Nuevo Paciente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tutor Responsable *</label>
+                        <select name="tutor_id" class="form-select" required>
+                            <option value="">Seleccione un tutor registrado...</option>
+                            {% for t in tutores %}
+                            <option value="{{ t.id }}">{{ t.nombre_completo }} (RUT: {{ t.rut }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Nombre del Paciente *</label>
+                            <input type="text" name="nombre" class="form-control" required placeholder="Ej: Rocky">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Especie *</label>
+                            <select name="especie" class="form-select" required>
+                                <option value="CANINO">Canino (Perro)</option>
+                                <option value="FELINO">Felino (Gato)</option>
+                                <option value="AVE">Ave</option>
+                                <option value="ROEDOR">Roedor / Conejo</option>
+                                <option value="EXOTICO">Exótico / Reptil</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Raza</label>
+                            <input type="text" name="raza" class="form-control" placeholder="Ej: Golden Retriever">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Sexo *</label>
+                            <select name="sexo" class="form-select" required>
+                                <option value="MACHO">Macho</option>
+                                <option value="HEMBRA">Hembra</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha Nacimiento *</label>
+                            <input type="date" name="fecha_nacimiento" class="form-control" required value="2022-01-15">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Peso Actual (Kg) *</label>
+                            <input type="number" step="0.1" name="peso_actual_kg" class="form-control" required value="5.5">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">N° Microchip (SAG)</label>
+                        <input type="text" name="numero_chip" class="form-control" placeholder="Ej: 990000001234567">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ilustración / Foto Paciente</label>
+                        <select name="foto" class="form-select">
+                            <option value="/static/images/pets/pet_dog1.svg">Perro Labrador / Mestizo (Azul)</option>
+                            <option value="/static/images/pets/pet_dog2.svg">Perro Ovejero (Azul Oscuro)</option>
+                            <option value="/static/images/pets/pet_cat1.svg">Gato Siamés (Morado)</option>
+                            <option value="/static/images/pets/pet_cat2.svg">Gato Atigrado (Púrpura)</option>
+                            <option value="/static/images/pets/pet_rabbit.svg">Conejo / Roedor (Ámbar)</option>
+                            <option value="/static/images/pets/pet_bird.svg">Ave / Loro (Verde)</option>
+                            <option value="/static/images/pets/pet_default.svg">Estándar PetCare</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal">Guardar Paciente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

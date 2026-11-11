@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vacunación y Recordatorios Preventivos • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Carnet de Vacunación & Alertas Preventivas 💉</h2>
+            <p class="text-muted mb-0">Semáforo de inmunizaciones y <b>módulo automatizado de recordatorios</b></p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNuevaVacuna">
+            <i class="fa-solid fa-syringe"></i> Registrar Nueva Vacuna
+        </button>
+    </div>
+
+    <!-- Semaphore Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="card-custom p-3 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-semibold" style="font-size:0.75rem;">Vacunas Al Día</small>
+                        <h3 class="fw-bold my-1 text-success">Verde</h3>
+                        <small class="text-muted">Protección inmunológica vigente</small>
+                    </div>
+                    <div class="fs-1 text-success opacity-50"><i class="bi bi-shield-fill-check"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card-custom p-3 border-start border-warning border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-semibold" style="font-size:0.75rem;">Por Vencer (&lt; 15 días)</small>
+                        <h3 class="fw-bold my-1 text-warning">Amarillo</h3>
+                        <small class="text-muted">Requiere notificación al tutor</small>
+                    </div>
+                    <div class="fs-1 text-warning opacity-50"><i class="bi bi-exclamation-circle-fill"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card-custom p-3 border-start border-danger border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted text-uppercase fw-semibold" style="font-size:0.75rem;">Vacunas Vencidas</small>
+                        <h3 class="fw-bold my-1 text-danger">Rojo</h3>
+                        <small class="text-muted">Prioridad de refuerzo urgente</small>
+                    </div>
+                    <div class="fs-1 text-danger opacity-50"><i class="bi bi-x-circle-fill"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vacunas Table -->
+    <div class="card-custom p-4 mb-4">
+        <h5 class="fw-bold mb-3">Control de Inmunizaciones por Paciente</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>Paciente</th>
+                        <th>Vacuna / Biológico</th>
+                        <th>Lote</th>
+                        <th>Fecha Aplicación</th>
+                        <th>Próxima Dosis / Refuerzo</th>
+                        <th>Estado Semáforo</th>
+                        <th>Médico Responsable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vacunas %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ v.mascota.foto }}" alt="Pet" class="rounded-circle" style="width:36px; height:36px; object-fit:cover;">
+                                <div>
+                                    <div class="fw-bold text-dark">{{ v.mascota.nombre }}</div>
+                                    <small class="text-muted">Tutor: {{ v.mascota.tutor.nombre_completo }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ v.nombre_vacuna }}</div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border font-monospace">{{ v.lote }}</span></td>
+                        <td>{{ v.fecha_aplicacion|date:"d/m/Y" }}</td>
+                        <td>
+                            <b class="{% if v.estado_actual == 'VENCIDA' %}text-danger{% elif v.estado_actual == 'POR_VENCER' %}text-warning{% else %}text-dark{% endif %}">
+                                {{ v.fecha_proxima_dosis|date:"d/m/Y" }}
+                            </b>
+                        </td>
+                        <td>
+                            {% if v.estado_actual == 'AL_DIA' %}
+                            <span class="badge-status bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                <i class="bi bi-circle-fill" style="font-size:8px;"></i> Al Día
+                            </span>
+                            {% elif v.estado_actual == 'POR_VENCER' %}
+                            <span class="badge-status bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                                <i class="bi bi-circle-fill" style="font-size:8px;"></i> Por Vencer
+                            </span>
+                            {% else %}
+                            <span class="badge-status bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                                <i class="bi bi-circle-fill" style="font-size:8px;"></i> Vencida
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td><small class="fw-semibold">Dr(a). {{ v.veterinario.nombre_completo }}</small></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No hay registros de vacunación ingresados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Automated Reminders Module (Requerimiento Crítico Rúbrica) -->
+    <div class="card-custom p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-bell text-warning me-2"></i>Módulo Automatizado de Recordatorios Preventivos</h5>
+                <small class="text-muted">Despacho automatizado de notificaciones vía WhatsApp, Email y SMS a tutores</small>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+                <i class="bi bi-cpu me-1"></i> Cron Daemon Activo
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>Fecha Programada</th>
+                        <th>Destinatario (Tutor)</th>
+                        <th>Paciente</th>
+                        <th>Tipo / Canal</th>
+                        <th>Mensaje Notificación</th>
+                        <th>Estado</th>
+                        <th>Acción Inmediata</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in recordatorios %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">{{ r.fecha_programada|date:"d/m/Y" }}</div>
+                            <small class="text-muted">{{ r.disparado_por }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ r.tutor.nombre_completo }}</div>
+                            <small class="text-muted">{{ r.tutor.telefono }}</small>
+                        </td>
+                        <td><b>{{ r.mascota.nombre }}</b></td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ r.get_tipo_display }}</span>
+                            <div class="small mt-1">
+                                {% if r.canal == 'WHATSAPP' %}
+                                <span class="text-success fw-bold"><i class="bi bi-whatsapp me-1"></i>WhatsApp</span>
+                                {% elif r.canal == 'EMAIL' %}
+                                <span class="text-primary fw-bold"><i class="bi bi-envelope me-1"></i>Email</span>
+                                {% else %}
+                                <span class="text-secondary fw-bold"><i class="bi bi-chat-dots me-1"></i>SMS</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-truncate" style="max-width: 250px;" title="{{ r.mensaje }}">{{ r.mensaje }}</div>
+                        </td>
+                        <td>
+                            {% if r.estado == 'ENVIADO' %}
+                            <span class="badge bg-success"><i class="bi bi-check-all me-1"></i>Enviado</span>
+                            <div class="small text-muted" style="font-size:0.72rem;">{{ r.fecha_envio_real|date:"d/m H:i" }}</div>
+                            {% else %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.estado == 'PENDIENTE' %}
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="disparar_recordatorio">
+                                <input type="hidden" name="recordatorio_id" value="{{ r.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success py-1 px-2 d-flex align-items-center gap-1">
+                                    <i class="bi bi-send-fill"></i> Disparar Ahora
+                                </button>
+                            </form>
+                            {% else %}
+                            <button class="btn btn-sm btn-light border py-1 px-2 text-muted" disabled>
+                                <i class="bi bi-check2"></i> Despachado
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No hay recordatorios pendientes.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nueva Vacuna -->
+<div class="modal fade" id="modalNuevaVacuna" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-syringe me-2"></i>Registrar Vacuna / Inmunización</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="crear_vacuna">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Paciente *</label>
+                        <select name="mascota_id" class="form-select" required>
+                            <option value="">Seleccione el paciente...</option>
+                            {% for m in mascotas %}
+                            <option value="{{ m.id }}">{{ m.nombre }} ({{ m.get_especie_display }}) — Tutor: {{ m.tutor.nombre_completo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Biológico / Vacuna *</label>
+                        <select name="nombre_vacuna" class="form-select" required>
+                            <option value="Antirrábica">Antirrábica Canina/Felina (Obligatoria)</option>
+                            <option value="Séxtuple Canina">Séxtuple Canina (Distemper, Parvovirus, Hepatitis, etc.)</option>
+                            <option value="Óctuple Canina">Óctuple Canina Completa</option>
+                            <option value="Triple Felina">Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)</option>
+                            <option value="Leucemia Felina">Leucemia Felina (FeLV)</option>
+                            <option value="KC Tos de las Perreras">KC / Bordetella Bronchiseptica</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Número de Lote *</label>
+                            <input type="text" name="lote" class="form-control" required value="LT-2026-CH">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Médico Responsable *</label>
+                            <select name="veterinario_id" class="form-select" required>
+                                {% for v in veterinarios %}
+                                <option value="{{ v.id }}">Dr(a). {{ v.nombre_completo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha Aplicación *</label>
+                            <input type="date" name="fecha_aplicacion" class="form-control" required value="{{ hoy|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Próxima Dosis / Vence *</label>
+                            <input type="date" name="fecha_proxima_dosis" class="form-control" required>
+                            <small class="text-muted" style="font-size:0.72rem;">Generará recordatorio automático</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal">Guardar Inmunización</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

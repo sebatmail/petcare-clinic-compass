@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tutores y Clientes • PetCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Directorio de Tutores / Clientes 👥</h2>
+            <p class="text-muted mb-0">Gestión de tutores, datos de contacto y vinculación con sus mascotas</p>
+        </div>
+        <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNuevoTutor">
+            <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Tutor
+        </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card-custom p-3 mb-4">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-12 col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ query }}" class="form-control border-start-0" placeholder="Buscar por Nombre, RUT chileno o Teléfono...">
+                </div>
+            </div>
+            <div class="col-12 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-teal flex-grow-1">Filtrar</button>
+                {% if query %}
+                <a href="{% url 'tutores' %}" class="btn btn-light border">Limpiar</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Tutors Grid / Table -->
+    <div class="card-custom p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr style="font-size:0.8rem; text-transform:uppercase;">
+                        <th>Avatar</th>
+                        <th>Nombre Completo</th>
+                        <th>RUT</th>
+                        <th>Teléfono / WhatsApp</th>
+                        <th>Correo Electrónico</th>
+                        <th>Comuna</th>
+                        <th>Mascotas</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tutores %}
+                    <tr>
+                        <td>
+                            <img src="{{ t.foto }}" alt="Avatar" class="rounded-circle shadow-sm" style="width:42px; height:42px; object-fit:cover; border:2px solid #0d9488;">
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ t.nombre_completo }}</div>
+                            <small class="text-muted">{{ t.direccion|default:"Sin dirección" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border font-monospace px-2 py-1">{{ t.rut }}</span>
+                        </td>
+                        <td>
+                            <a href="https://wa.me/{{ t.telefono }}" target="_blank" class="text-decoration-none text-success fw-semibold">
+                                <i class="bi bi-whatsapp me-1"></i>{{ t.telefono }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ t.email }}" class="text-muted text-decoration-none">
+                                <i class="bi bi-envelope me-1"></i>{{ t.email }}
+                            </a>
+                        </td>
+                        <td>{{ t.comuna }}</td>
+                        <td>
+                            <span class="badge bg-teal" style="background:#0d9488;">{{ t.total_mascotas }} Paciente(s)</span>
+                        </td>
+                        <td>
+                            {% if t.activo %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Activo</span>
+                            {% else %}
+                            <span class="badge bg-secondary px-2 py-1">Inactivo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-people display-6 d-block mb-2 text-muted"></i>
+                            No se encontraron tutores con los criterios de búsqueda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Tutor -->
+<div class="modal fade" id="modalNuevoTutor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom py-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color:white;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Tutor</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_api %}{% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre Completo *</label>
+                        <input type="text" name="nombre_completo" class="form-control" required placeholder="Ej: Marcela González">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">RUT Chileno *</label>
+                            <input type="text" name="rut" class="form-control" required placeholder="12345678-5">
+                            <small class="text-muted" style="font-size:0.75rem;">Con guión y dígito verificador</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono *</label>
+                            <input type="text" name="telefono" class="form-control" required placeholder="+56912345678">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Correo Electrónico *</label>
+                        <input type="email" name="email" class="form-control" required placeholder="ejemplo@correo.cl">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Dirección</label>
+                            <input type="text" name="direccion" class="form-control" placeholder="Av. Providencia 1234">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Comuna</label>
+                            <input type="text" name="comuna" class="form-control" value="Santiago">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Avatar de Perfil</label>
+                        <select name="foto" class="form-select">
+                            <option value="/static/images/avatars/tutor_1.svg">Avatar Azul (Sebastián)</option>
+                            <option value="/static/images/avatars/tutor_2.svg">Avatar Morado (Camila)</option>
+                            <option value="/static/images/avatars/tutor_3.svg">Avatar Rosa (María)</option>
+                            <option value="/static/images/avatars/tutor_4.svg">Avatar Ámbar (Juan)</option>
+                            <option value="/static/images/avatars/tutor_default.svg">Avatar Estándar PetCare</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-teal">Guardar Tutor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

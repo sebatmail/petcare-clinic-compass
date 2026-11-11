@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn daemon for PetCare Veterinary System
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+UMask=007
+WorkingDirectory=/home/ubuntu/petcare_project
+ExecStart=/home/ubuntu/petcare_project/venv/bin/gunicorn --workers 3 --bind unix:/home/ubuntu/petcare_project/petcare.sock petcare_core.wsgi:application
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
