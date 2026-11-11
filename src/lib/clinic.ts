@@ -2,20 +2,7 @@
 export type Species = "Perro" | "Gato" | "Conejo" | "Otro";
 export interface Tutor { id: string; nombre: string; rut: string; email: string; telefono: string; direccion: string; foto?: string }
 export interface Vacuna { nombre: string; fecha: string; proxima: string }
-export interface Mascota {
-  id: string;
-  tutorId: string;
-  nombre: string;
-  especie: Species;
-  raza: string;
-  nacimiento: string;
-  peso: number;
-  foto?: string;
-  vacunas: Vacuna[];
-  color?: string;
-  sexo?: "Macho" | "Hembra";
-  numeroChip?: string;
-}
+export interface Mascota { id: string; tutorId: string; nombre: string; especie: Species; raza: string; nacimiento: string; peso: number; foto?: string; vacunas: Vacuna[] }
 export interface Veterinario { id: string; nombre: string; especialidad: string; inicio: string; fin: string; dias: number[]; foto?: string }
 export type EstadoCita = "Programada" | "Confirmada" | "Atendida" | "Cancelada";
 export interface Cita { id: string; mascotaId: string; vetId: string; fecha: string; hora: string; duracion: number; motivo: string; estado: EstadoCita }
