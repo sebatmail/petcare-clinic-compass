@@ -10,11 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgendaRouteImport } from './routes/agenda'
+import { Route as MascotasRouteImport } from './routes/mascotas'
+import { Route as ProfesionalesRouteImport } from './routes/profesionales'
 import { Route as TutoresRouteImport } from './routes/tutores'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MascotasRoute = MascotasRouteImport.update({
+  id: '/mascotas',
+  path: '/mascotas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfesionalesRoute = ProfesionalesRouteImport.update({
+  id: '/profesionales',
+  path: '/profesionales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TutoresRoute = TutoresRouteImport.update({
@@ -25,27 +43,39 @@ const TutoresRoute = TutoresRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/mascotas': typeof MascotasRoute
+  '/profesionales': typeof ProfesionalesRoute
   '/tutores': typeof TutoresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/mascotas': typeof MascotasRoute
+  '/profesionales': typeof ProfesionalesRoute
   '/tutores': typeof TutoresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/mascotas': typeof MascotasRoute
+  '/profesionales': typeof ProfesionalesRoute
   '/tutores': typeof TutoresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tutores'
+  fullPaths: '/' | '/agenda' | '/mascotas' | '/profesionales' | '/tutores'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tutores'
-  id: '__root__' | '/' | '/tutores'
+  to: '/' | '/agenda' | '/mascotas' | '/profesionales' | '/tutores'
+  id: '__root__' | '/' | '/agenda' | '/mascotas' | '/profesionales' | '/tutores'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
+  MascotasRoute: typeof MascotasRoute
+  ProfesionalesRoute: typeof ProfesionalesRoute
   TutoresRoute: typeof TutoresRoute
 }
 
@@ -56,6 +86,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mascotas': {
+      id: '/mascotas'
+      path: '/mascotas'
+      fullPath: '/mascotas'
+      preLoaderRoute: typeof MascotasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profesionales': {
+      id: '/profesionales'
+      path: '/profesionales'
+      fullPath: '/profesionales'
+      preLoaderRoute: typeof ProfesionalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tutores': {
@@ -70,6 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
+  MascotasRoute: MascotasRoute,
+  ProfesionalesRoute: ProfesionalesRoute,
   TutoresRoute: TutoresRoute,
 }
 export const routeTree = rootRouteImport
